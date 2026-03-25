@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mastering IA App</title>
+  <style>
+    :root {
+      --bg: #0b0f14;
+      --card: #121821;
+      --text: #f5f7fb;
+      --muted: #9aa4b2;
+      --accent: #4f8cff;
+      --border: #223043;
+      --success: #1f9d55;
+    }
+
+    body.light {
+      --bg: #f3f6fb;
+      --card: #ffffff;
+      --text: #101828;
+      --muted: #667085;
+      --accent: #2563eb;
+      --border: #d0d5dd;
+      --success: #16a34a;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      padding: 16px;
+      transition: background 0.25s ease, color 0.25s ease;
+    }
+
+    .app {
+      max-width: 680px;
+      margin: 0 auto;
+      display: grid;
+      gap: 16px;
+    }
+
+    .topbar, .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 16px;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    h1 {
+      font-size: 1.3rem;
+    }
+
+    .sub {
+      color: var(--muted);
+      font-size: 0.95rem;
+      margin-top: 4px;
+    }
+
+    .theme-btn, .main-btn, .secondary-btn, .file-label {
+      border: none;
+      border-radius: 14px;
+      padding: 14px 16px;
+      font-size: 1rem;
+      cursor: pointer;
+      width: 100%;
+    }
+
+    .theme-btn {
+      width: auto;
+      background: var(--accent);
+      color: white;
+      font-weight: bold;
+    }
+
+    .main-btn {
+      background: var(--accent);
+      color: white;
+      font-weight: bold;
+    }
+
+    .secondary-btn, .file-label {
+      background: transparent;
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+
+    .file-input {
+      display: none;
+    }
+
+    .row {
+      display: grid;
+      gap: 10px;
+    }
+
+    textarea {
+      width: 100%;
+      min-height: 110px;
+      background: transparent;
+      color: var(--text);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 14px;
+      font-size: 1rem;
+      resize: vertical;
+    }
+
+    .status {
+      padding: 12px;
+      border-radius: 14px;
+      background: rgba(79, 140, 255, 0.12);
+      border: 1px solid var(--border);
+      color: var(--text);
+      font-size: 0.95rem;
+    }
+
+    .status.success {
+      background: rgba(31, 157, 85, 0.14);
+    }
+
+    .small {
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+
+    .audio-box {
+      display: grid;
+      gap: 10px;
+    }
+
+    audio {
+      width: 100%;
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <div class="topbar">
+      <div>
+        <h1>Mastering IA</h1>
+        <p class="sub">Application mobile sombre / clair</p>
+      </div>
+      <button id="themeToggle" class="theme-btn">Mode clair</button>
+    </div>
+
+    <div class="card row">
+      <h2>Importer un morceau</h2>
+      <label class="file-label" for="audioFile">Choisir un fichier audio</label>
+      <input id="audioFile" class="file-input" type="file" accept="audio/*" />
+      <p id="fileName" class="small">Aucun fichier sélectionné</p>
+
+      <div id="audioBox" class="audio-box" style="display:none;">
+        <audio id="audioPreview" controls></audio>
+      </div>
+    </div>
+
+    <div class="card row">
+      <h2>Instruction</h2>
+      <textarea id="promptInput">Rends ce son parfait. Je veux un rendu propre, puissant, équilibré et professionnel.</textarea>
+      <button id="analyzeBtn" class="main-btn">Analyser et préparer le mastering</button>
+      <button id="masterBtn" class="secondary-btn">Lancer la masterisation</button>
+    </div>
+
+    <div class="card row">
+      <h2>Statut</h2>
+      <div id="statusBox" class="status">En attente d’un fichier audio.</div>
+    </div>
+  </div>
+
+  <script>
+    const body = document.body;
+    const themeToggle = document.getElementById("themeToggle");
+    const audioFile = document.getElementById("audioFile");
+    const fileName = document.getElementById("fileName");
+    const audioPreview = document.getElementById("audioPreview");
+    const audioBox = document.getElementById("audioBox");
+    const statusBox = document.getElementById("statusBox");
+    const analyzeBtn = document.getElementById("analyzeBtn");
+    const masterBtn = document.getElementById("masterBtn");
+
+    const savedTheme = localStorage.getItem("mastering-theme");
+    if (savedTheme === "light") {
+      body.classList.add("light");
+      themeToggle.textContent = "Mode sombre";
+    }
+
+    themeToggle.addEventListener("click", () => {
+      body.classList.toggle("light");
+      const isLight = body.classList.contains("light");
+      localStorage.setItem("mastering-theme", isLight ? "light" : "dark");
+      themeToggle.textContent = isLight ? "Mode sombre" : "Mode clair";
+    });
+
+    audioFile.addEventListener("change", (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      fileName.textContent = file.name;
+      audioPreview.src = URL.createObjectURL(file);
+      audioBox.style.display = "grid";
+      statusBox.textContent = "Fichier chargé. Prêt pour l’analyse.";
+      statusBox.className = "status success";
+    });
+
+    analyzeBtn.addEventListener("click", () => {
+      if (!audioFile.files[0]) {
+        statusBox.textContent = "Ajoute d’abord un fichier audio.";
+        statusBox.className = "status";
+        return;
+      }
+
+      statusBox.textContent = "Analyse simulée lancée. Le backend réel sera branché à l’étape suivante.";
+      statusBox.className = "status success";
+    });
+
+    masterBtn.addEventListener("click", () => {
+      if (!audioFile.files[0]) {
+        statusBox.textContent = "Ajoute d’abord un fichier audio.";
+        statusBox.className = "status";
+        return;
+      }
+
+      statusBox.textContent = "Masterisation simulée prête. Le rendu réel sera branché avec le backend.";
+      statusBox.className = "status success";
+    });
+  </script>
+</body>
+</html>
