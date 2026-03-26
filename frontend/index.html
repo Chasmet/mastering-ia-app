@@ -1,0 +1,677 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mastering IA</title>
+  <style>
+    :root {
+      --bg: #09111c;
+      --card: #101a28;
+      --card-2: #0d1622;
+      --text: #f3f7ff;
+      --muted: #9db0c7;
+      --accent: #5d8cff;
+      --accent-2: #7ea3ff;
+      --border: #22344b;
+      --success: #1ea463;
+      --danger: #dc3e3e;
+      --shadow: 0 10px 30px rgba(0, 0, 0, 0.28);
+    }
+
+    body.light {
+      --bg: #edf3fb;
+      --card: #ffffff;
+      --card-2: #f7faff;
+      --text: #112033;
+      --muted: #66788f;
+      --accent: #356dff;
+      --accent-2: #5c89ff;
+      --border: #d5e0ee;
+      --success: #169451;
+      --danger: #d93030;
+      --shadow: 0 10px 30px rgba(26, 54, 93, 0.10);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      background: linear-gradient(180deg, var(--bg), #08101a);
+      color: var(--text);
+      min-height: 100vh;
+      padding: 14px;
+    }
+
+    .app {
+      max-width: 760px;
+      margin: 0 auto;
+      display: grid;
+      gap: 14px;
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 22px;
+      padding: 16px;
+      box-shadow: var(--shadow);
+    }
+
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .title-wrap h1 {
+      font-size: 1.9rem;
+      line-height: 1;
+      margin-bottom: 6px;
+    }
+
+    .sub {
+      color: var(--muted);
+      font-size: 1rem;
+    }
+
+    .theme-btn,
+    .main-btn,
+    .secondary-btn,
+    .ghost-btn,
+    .file-label,
+    .download-link {
+      border: none;
+      border-radius: 18px;
+      padding: 16px 18px;
+      font-size: 1.05rem;
+      font-weight: 700;
+      cursor: pointer;
+      width: 100%;
+      text-align: center;
+      text-decoration: none;
+    }
+
+    .theme-btn {
+      width: 160px;
+      background: var(--accent);
+      color: white;
+      font-size: 1rem;
+    }
+
+    .main-btn {
+      background: linear-gradient(180deg, var(--accent-2), var(--accent));
+      color: white;
+    }
+
+    .secondary-btn {
+      background: transparent;
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+
+    .ghost-btn {
+      background: transparent;
+      color: var(--muted);
+      border: 1px dashed var(--border);
+      font-weight: 600;
+    }
+
+    .download-link {
+      background: linear-gradient(180deg, var(--accent-2), var(--accent));
+      color: white;
+    }
+
+    .section-title {
+      font-size: 1.25rem;
+      margin-bottom: 14px;
+    }
+
+    .stack {
+      display: grid;
+      gap: 12px;
+    }
+
+    .file-input {
+      display: none;
+    }
+
+    .file-label {
+      background: var(--card-2);
+      color: var(--text);
+      border: 1px solid var(--border);
+      font-weight: 500;
+    }
+
+    .small {
+      color: var(--muted);
+      font-size: 0.95rem;
+      line-height: 1.35;
+    }
+
+    textarea {
+      width: 100%;
+      min-height: 130px;
+      background: var(--card-2);
+      color: var(--text);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 16px;
+      font-size: 1.05rem;
+      line-height: 1.4;
+      resize: vertical;
+    }
+
+    .audio-box {
+      display: none;
+      gap: 10px;
+    }
+
+    audio {
+      width: 100%;
+      border-radius: 14px;
+    }
+
+    .status {
+      padding: 14px;
+      border-radius: 18px;
+      border: 1px solid var(--border);
+      background: rgba(93, 140, 255, 0.12);
+      color: var(--text);
+      line-height: 1.45;
+      font-size: 1rem;
+      white-space: pre-wrap;
+    }
+
+    .status.success {
+      background: rgba(30, 164, 99, 0.12);
+    }
+
+    .status.error {
+      background: rgba(220, 62, 62, 0.12);
+      border-color: rgba(220, 62, 62, 0.35);
+    }
+
+    .progress-wrap {
+      display: none;
+      gap: 10px;
+      margin-top: 4px;
+    }
+
+    .progress-label {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      font-size: 0.95rem;
+      color: var(--muted);
+    }
+
+    .progress-bar {
+      width: 100%;
+      height: 14px;
+      border-radius: 999px;
+      background: var(--card-2);
+      border: 1px solid var(--border);
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      width: 0%;
+      height: 100%;
+      border-radius: 999px;
+      background: linear-gradient(90deg, var(--accent), var(--accent-2));
+      transition: width 0.35s ease;
+    }
+
+    .download-box {
+      display: none;
+      gap: 10px;
+    }
+
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(3, 8, 15, 0.72);
+      display: none;
+      align-items: flex-end;
+      justify-content: center;
+      padding: 14px;
+      z-index: 50;
+    }
+
+    .modal {
+      width: 100%;
+      max-width: 760px;
+      max-height: 86vh;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 24px 24px 18px 18px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      padding: 16px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .modal-title {
+      font-size: 1.15rem;
+      font-weight: 700;
+    }
+
+    .close-btn {
+      width: 46px;
+      height: 46px;
+      border-radius: 14px;
+      border: 1px solid var(--border);
+      background: var(--card-2);
+      color: var(--text);
+      font-size: 1.2rem;
+      cursor: pointer;
+    }
+
+    .modal-content {
+      overflow: auto;
+      padding: 16px;
+      white-space: pre-wrap;
+      line-height: 1.5;
+      font-size: 1rem;
+      background: var(--card);
+    }
+
+    .modal-footer {
+      padding: 14px 16px 16px;
+      border-top: 1px solid var(--border);
+      background: var(--card);
+    }
+
+    .result-preview {
+      color: var(--muted);
+      font-size: 0.98rem;
+      line-height: 1.5;
+      background: var(--card-2);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 14px;
+    }
+
+    @media (max-width: 520px) {
+      .topbar {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .theme-btn {
+        width: 100%;
+      }
+
+      .title-wrap h1 {
+        font-size: 1.7rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <div class="card topbar">
+      <div class="title-wrap">
+        <h1>Mastering IA</h1>
+        <p class="sub">Application mobile sombre / clair</p>
+      </div>
+      <button id="themeToggle" class="theme-btn">Mode clair</button>
+    </div>
+
+    <div class="card stack">
+      <h2 class="section-title">Importer un morceau</h2>
+      <label class="file-label" for="audioFile">Choisir un fichier audio</label>
+      <input id="audioFile" class="file-input" type="file" accept="audio/*" />
+      <p id="fileName" class="small">Aucun fichier sélectionné</p>
+
+      <div id="audioBox" class="audio-box">
+        <audio id="audioPreview" controls></audio>
+      </div>
+    </div>
+
+    <div class="card stack">
+      <h2 class="section-title">Instruction</h2>
+      <textarea id="promptInput">Rends ce son parfait. Je veux un rendu propre, puissant, équilibré et professionnel.</textarea>
+      <button id="analyzeBtn" class="main-btn">Analyser et préparer le mastering</button>
+      <button id="masterBtn" class="secondary-btn">Lancer la masterisation</button>
+    </div>
+
+    <div class="card stack">
+      <h2 class="section-title">Statut</h2>
+      <div id="statusBox" class="status">En attente d’un fichier audio.</div>
+
+      <div id="progressWrap" class="progress-wrap">
+        <div class="progress-label">
+          <span id="progressText">Préparation...</span>
+          <span id="progressPercent">0%</span>
+        </div>
+        <div class="progress-bar">
+          <div id="progressFill" class="progress-fill"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card stack">
+      <h2 class="section-title">Analyse / plan</h2>
+      <div id="resultPreview" class="result-preview">Aucun résultat pour le moment.</div>
+      <button id="openAnalysisBtn" class="ghost-btn">Ouvrir la fenêtre dédiée</button>
+    </div>
+
+    <div class="card stack download-box" id="downloadBox">
+      <h2 class="section-title">Téléchargement</h2>
+      <a id="downloadLink" class="download-link" href="#" download>Télécharger le master</a>
+      <p id="downloadInfo" class="small"></p>
+    </div>
+  </div>
+
+  <div id="analysisModalBackdrop" class="modal-backdrop">
+    <div class="modal">
+      <div class="modal-header">
+        <div class="modal-title">Analyse et plan détaillés</div>
+        <button id="closeAnalysisBtn" class="close-btn">✕</button>
+      </div>
+      <div id="analysisModalContent" class="modal-content">Aucun résultat pour le moment.</div>
+      <div class="modal-footer">
+        <button id="closeAnalysisBtnBottom" class="secondary-btn">Fermer</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const BACKEND_URL = "https://mastering-ia-app.onrender.com";
+
+    const body = document.body;
+    const themeToggle = document.getElementById("themeToggle");
+    const audioFile = document.getElementById("audioFile");
+    const fileName = document.getElementById("fileName");
+    const audioPreview = document.getElementById("audioPreview");
+    const audioBox = document.getElementById("audioBox");
+    const statusBox = document.getElementById("statusBox");
+    const analyzeBtn = document.getElementById("analyzeBtn");
+    const masterBtn = document.getElementById("masterBtn");
+    const promptInput = document.getElementById("promptInput");
+    const downloadBox = document.getElementById("downloadBox");
+    const downloadLink = document.getElementById("downloadLink");
+    const downloadInfo = document.getElementById("downloadInfo");
+    const resultPreview = document.getElementById("resultPreview");
+    const openAnalysisBtn = document.getElementById("openAnalysisBtn");
+    const analysisModalBackdrop = document.getElementById("analysisModalBackdrop");
+    const analysisModalContent = document.getElementById("analysisModalContent");
+    const closeAnalysisBtn = document.getElementById("closeAnalysisBtn");
+    const closeAnalysisBtnBottom = document.getElementById("closeAnalysisBtnBottom");
+    const progressWrap = document.getElementById("progressWrap");
+    const progressFill = document.getElementById("progressFill");
+    const progressText = document.getElementById("progressText");
+    const progressPercent = document.getElementById("progressPercent");
+
+    let lastAnalysis = null;
+    let lastPlanText = "";
+    let progressTimer = null;
+
+    const savedTheme = localStorage.getItem("mastering-theme");
+    if (savedTheme === "light") {
+      body.classList.add("light");
+      themeToggle.textContent = "Mode sombre";
+    }
+
+    function setStatus(text, type = "") {
+      statusBox.textContent = text;
+      statusBox.className = "status";
+      if (type) statusBox.classList.add(type);
+    }
+
+    function setResultText(fullText) {
+      analysisModalContent.textContent = fullText || "Aucun résultat pour le moment.";
+
+      const preview = (fullText || "Aucun résultat pour le moment.")
+        .replace(/\s+/g, " ")
+        .trim();
+
+      if (preview.length > 220) {
+        resultPreview.textContent = preview.slice(0, 220) + "...";
+      } else {
+        resultPreview.textContent = preview;
+      }
+    }
+
+    function openAnalysisModal() {
+      analysisModalBackdrop.style.display = "flex";
+    }
+
+    function closeAnalysisModal() {
+      analysisModalBackdrop.style.display = "none";
+    }
+
+    function resetProgress() {
+      clearInterval(progressTimer);
+      progressTimer = null;
+      progressWrap.style.display = "none";
+      progressFill.style.width = "0%";
+      progressText.textContent = "Préparation...";
+      progressPercent.textContent = "0%";
+    }
+
+    function startFakeProgress() {
+      clearInterval(progressTimer);
+      progressWrap.style.display = "grid";
+
+      let percent = 0;
+      const steps = [
+        { limit: 12, label: "Préparation du fichier..." },
+        { limit: 28, label: "Envoi vers le serveur..." },
+        { limit: 46, label: "Analyse du signal..." },
+        { limit: 63, label: "Création du plan IA..." },
+        { limit: 79, label: "Traitement du master..." },
+        { limit: 92, label: "Finalisation du fichier..." }
+      ];
+
+      progressTimer = setInterval(() => {
+        if (percent < 92) {
+          percent += Math.random() < 0.65 ? 2 : 1;
+        }
+
+        let currentLabel = "Traitement...";
+        for (const step of steps) {
+          if (percent <= step.limit) {
+            currentLabel = step.label;
+            break;
+          }
+        }
+
+        progressFill.style.width = percent + "%";
+        progressPercent.textContent = percent + "%";
+        progressText.textContent = currentLabel;
+      }, 450);
+    }
+
+    function finishProgress() {
+      clearInterval(progressTimer);
+      progressTimer = null;
+      progressWrap.style.display = "grid";
+      progressFill.style.width = "100%";
+      progressPercent.textContent = "100%";
+      progressText.textContent = "Terminé";
+    }
+
+    themeToggle.addEventListener("click", () => {
+      body.classList.toggle("light");
+      const isLight = body.classList.contains("light");
+      localStorage.setItem("mastering-theme", isLight ? "light" : "dark");
+      themeToggle.textContent = isLight ? "Mode sombre" : "Mode clair";
+    });
+
+    audioFile.addEventListener("change", (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      fileName.textContent = file.name;
+      audioPreview.src = URL.createObjectURL(file);
+      audioBox.style.display = "grid";
+
+      setStatus("Fichier chargé. Prêt pour l’analyse.", "success");
+      setResultText("Aucun résultat pour le moment.");
+      downloadBox.style.display = "none";
+      downloadLink.href = "#";
+      downloadInfo.textContent = "";
+      lastAnalysis = null;
+      lastPlanText = "";
+      resetProgress();
+    });
+
+    openAnalysisBtn.addEventListener("click", openAnalysisModal);
+    closeAnalysisBtn.addEventListener("click", closeAnalysisModal);
+    closeAnalysisBtnBottom.addEventListener("click", closeAnalysisModal);
+    analysisModalBackdrop.addEventListener("click", (e) => {
+      if (e.target === analysisModalBackdrop) closeAnalysisModal();
+    });
+
+    analyzeBtn.addEventListener("click", async () => {
+      try {
+        const file = audioFile.files[0];
+
+        if (!file) {
+          setStatus("Ajoute d’abord un fichier audio.", "error");
+          return;
+        }
+
+        resetProgress();
+        setStatus("Analyse en cours...", "");
+
+        const formData = new FormData();
+        formData.append("audio", file);
+
+        const analyzeResponse = await fetch(`${BACKEND_URL}/api/analyze`, {
+          method: "POST",
+          body: formData
+        });
+
+        const analyzeData = await analyzeResponse.json();
+
+        if (!analyzeData.ok) {
+          throw new Error(analyzeData.error || "Erreur analyse");
+        }
+
+        lastAnalysis = analyzeData.analysis;
+
+        setStatus("Préparation du plan de mastering IA...", "success");
+
+        const planResponse = await fetch(`${BACKEND_URL}/api/mastering-plan`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            userPrompt: promptInput.value,
+            analysis: lastAnalysis
+          })
+        });
+
+        const planData = await planResponse.json();
+
+        if (!planData.ok) {
+          throw new Error(planData.error || "Erreur plan mastering");
+        }
+
+        lastPlanText = planData.result || "";
+
+        const fullText =
+          "Analyse :\n" +
+          JSON.stringify(lastAnalysis, null, 2) +
+          "\n\nPlan IA :\n" +
+          lastPlanText;
+
+        setResultText(fullText);
+        setStatus("Analyse et plan générés avec succès.", "success");
+      } catch (error) {
+        setStatus("Erreur : " + error.message, "error");
+      }
+    });
+
+    masterBtn.addEventListener("click", async () => {
+      try {
+        const file = audioFile.files[0];
+
+        if (!file) {
+          setStatus("Ajoute d’abord un fichier audio.", "error");
+          return;
+        }
+
+        if (!lastAnalysis) {
+          setStatus("Lance d’abord l’analyse avant la masterisation.", "error");
+          return;
+        }
+
+        startFakeProgress();
+        setStatus("Masterisation réelle en cours... cela peut prendre un peu de temps.", "");
+
+        downloadBox.style.display = "none";
+        downloadLink.href = "#";
+        downloadInfo.textContent = "";
+
+        const formData = new FormData();
+        formData.append("audio", file);
+        formData.append("userPrompt", promptInput.value);
+        formData.append("analysis", JSON.stringify(lastAnalysis));
+
+        const response = await fetch(`${BACKEND_URL}/api/master`, {
+          method: "POST",
+          body: formData
+        });
+
+        if (!response.ok) {
+          let errorMessage = "Erreur masterisation";
+          try {
+            const errorData = await response.json();
+            errorMessage = errorData.error || errorMessage;
+          } catch (_) {}
+          throw new Error(errorMessage);
+        }
+
+        const blob = await response.blob();
+        const planHeader = response.headers.get("X-Mastering-Plan");
+        const planText = planHeader ? decodeURIComponent(planHeader) : lastPlanText;
+
+        const url = URL.createObjectURL(blob);
+        const originalName = file.name.replace(/\.[^/.]+$/, "");
+        const finalName = `${originalName}_master.wav`;
+
+        downloadLink.href = url;
+        downloadLink.download = finalName;
+        downloadInfo.textContent = `Fichier prêt : ${finalName}`;
+        downloadBox.style.display = "grid";
+
+        const fullText =
+          "Analyse :\n" +
+          JSON.stringify(lastAnalysis, null, 2) +
+          "\n\nPlan IA utilisé :\n" +
+          (planText || "Aucun plan reçu");
+
+        setResultText(fullText);
+        finishProgress();
+        setStatus("Masterisation terminée. Télécharge ton fichier masterisé.", "success");
+      } catch (error) {
+        resetProgress();
+        setStatus("Erreur : " + error.message, "error");
+      }
+    });
+
+    setResultText("Aucun résultat pour le moment.");
+  </script>
+</body>
+</html>
