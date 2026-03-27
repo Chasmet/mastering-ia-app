@@ -1,0 +1,966 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"
+  />
+  <title>Mastering IA</title>
+  <style>
+    :root {
+      --bg: #07111f;
+      --bg-soft: #0c1930;
+      --card: rgba(14, 28, 52, 0.92);
+      --card-2: rgba(18, 35, 64, 0.98);
+      --text: #eef4ff;
+      --muted: #a8b8d8;
+      --border: rgba(140, 170, 230, 0.18);
+      --primary: #7da2ff;
+      --primary-2: #9db8ff;
+      --success-bg: rgba(32, 91, 62, 0.35);
+      --success-border: rgba(92, 211, 149, 0.25);
+      --error-bg: rgba(116, 30, 44, 0.32);
+      --error-border: rgba(255, 126, 126, 0.26);
+      --warning-bg: rgba(117, 88, 21, 0.28);
+      --warning-border: rgba(255, 206, 96, 0.24);
+      --shadow: 0 16px 40px rgba(0, 0, 0, 0.28);
+      --radius-xl: 24px;
+      --radius-lg: 18px;
+      --radius-md: 14px;
+    }
+
+    body.light {
+      --bg: #eef4ff;
+      --bg-soft: #dfeaff;
+      --card: rgba(255, 255, 255, 0.96);
+      --card-2: rgba(246, 249, 255, 0.98);
+      --text: #10203c;
+      --muted: #5b6f94;
+      --border: rgba(90, 120, 185, 0.18);
+      --primary: #5c82ff;
+      --primary-2: #7e9eff;
+      --success-bg: rgba(193, 246, 216, 0.68);
+      --success-border: rgba(60, 150, 100, 0.22);
+      --error-bg: rgba(255, 219, 226, 0.86);
+      --error-border: rgba(199, 65, 91, 0.20);
+      --warning-bg: rgba(255, 239, 196, 0.88);
+      --warning-border: rgba(190, 140, 32, 0.20);
+      --shadow: 0 18px 42px rgba(40, 65, 120, 0.14);
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      min-height: 100%;
+      font-family: Inter, Arial, sans-serif;
+      background:
+        radial-gradient(circle at top, rgba(91, 129, 255, 0.22), transparent 35%),
+        linear-gradient(180deg, var(--bg-soft) 0%, var(--bg) 55%, var(--bg) 100%);
+      color: var(--text);
+    }
+
+    body { padding: 18px 14px 30px; }
+
+    .app {
+      max-width: 760px;
+      margin: 0 auto;
+      display: grid;
+      gap: 16px;
+    }
+
+    .hero {
+      background: linear-gradient(180deg, rgba(18, 34, 63, 0.95), rgba(13, 25, 47, 0.92));
+      border: 1px solid var(--border);
+      border-radius: 28px;
+      padding: 18px;
+      box-shadow: var(--shadow);
+      display: flex;
+      gap: 14px;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    body.light .hero {
+      background: linear-gradient(180deg, rgba(255,255,255,0.97), rgba(242,247,255,0.96));
+    }
+
+    .hero-left { min-width: 0; }
+
+    .title {
+      margin: 0;
+      font-size: 2rem;
+      line-height: 1;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+    }
+
+    .subtitle {
+      margin-top: 6px;
+      color: var(--muted);
+      font-size: 0.98rem;
+    }
+
+    .theme-btn {
+      border: 0;
+      background: linear-gradient(180deg, var(--primary-2), var(--primary));
+      color: white;
+      border-radius: 18px;
+      padding: 16px 18px;
+      min-width: 118px;
+      font-size: 1.1rem;
+      font-weight: 800;
+      box-shadow: 0 10px 24px rgba(70, 111, 255, 0.25);
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-xl);
+      box-shadow: var(--shadow);
+      padding: 18px;
+    }
+
+    .section-title {
+      margin: 0 0 14px;
+      font-size: 1.65rem;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+    }
+
+    .file-box,
+    .textarea,
+    .summary-box,
+    .status-box,
+    .compact-box {
+      width: 100%;
+      background: var(--card-2);
+      border: 1px solid var(--border);
+      color: var(--text);
+      border-radius: 20px;
+    }
+
+    .file-box { padding: 14px; }
+
+    .file-box input {
+      width: 100%;
+      color: var(--text);
+      font-size: 1rem;
+    }
+
+    .audio-name {
+      margin-top: 10px;
+      color: var(--muted);
+      font-size: 1rem;
+      word-break: break-word;
+    }
+
+    audio {
+      margin-top: 14px;
+      width: 100%;
+      border-radius: 18px;
+    }
+
+    .textarea {
+      min-height: 120px;
+      resize: vertical;
+      padding: 18px;
+      font-size: 1.06rem;
+      line-height: 1.45;
+      outline: none;
+    }
+
+    .actions {
+      display: grid;
+      gap: 12px;
+      margin-top: 14px;
+    }
+
+    .btn {
+      width: 100%;
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 18px 16px;
+      font-size: 1.03rem;
+      font-weight: 800;
+      color: var(--text);
+      background: rgba(255,255,255,0.02);
+    }
+
+    .btn.primary {
+      border: 0;
+      color: white;
+      background: linear-gradient(180deg, var(--primary-2), var(--primary));
+      box-shadow: 0 12px 26px rgba(92, 130, 255, 0.26);
+    }
+
+    .btn.secondary { background: transparent; }
+
+    .btn.v4 {
+      background: linear-gradient(180deg, #8c6bff, #6d4dff);
+      color: white;
+      border: 0;
+      box-shadow: 0 12px 26px rgba(109, 77, 255, 0.24);
+    }
+
+    .status-box {
+      padding: 18px;
+      font-size: 1.05rem;
+      line-height: 1.45;
+    }
+
+    .status-box.success {
+      background: var(--success-bg);
+      border-color: var(--success-border);
+    }
+
+    .status-box.error {
+      background: var(--error-bg);
+      border-color: var(--error-border);
+    }
+
+    .status-box.warning {
+      background: var(--warning-bg);
+      border-color: var(--warning-border);
+    }
+
+    .progress-wrap {
+      margin-top: 16px;
+      display: none;
+    }
+
+    .progress-wrap.show { display: block; }
+
+    .progress-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: center;
+      margin-bottom: 10px;
+      color: var(--muted);
+      font-size: 1rem;
+      font-weight: 700;
+    }
+
+    .progress-track {
+      height: 18px;
+      width: 100%;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      overflow: hidden;
+    }
+
+    .progress-bar {
+      height: 100%;
+      width: 0%;
+      border-radius: 999px;
+      background: linear-gradient(90deg, var(--primary), var(--primary-2));
+      transition: width 0.35s ease;
+    }
+
+    .summary-box,
+    .compact-box { padding: 16px; }
+
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .metric {
+      background: rgba(255,255,255,0.02);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 12px;
+    }
+
+    .metric-title {
+      color: var(--muted);
+      font-size: 0.9rem;
+      margin-bottom: 6px;
+    }
+
+    .metric-value {
+      font-size: 1.05rem;
+      font-weight: 800;
+      word-break: break-word;
+    }
+
+    .mini-note {
+      margin-top: 12px;
+      color: var(--muted);
+      font-size: 0.95rem;
+      line-height: 1.4;
+    }
+
+    .result-actions {
+      display: grid;
+      gap: 12px;
+      margin-top: 14px;
+    }
+
+    .download-box {
+      display: none;
+      margin-top: 14px;
+    }
+
+    .download-box.show { display: block; }
+
+    .download-link {
+      display: block;
+      text-decoration: none;
+      text-align: center;
+      border-radius: 20px;
+      padding: 18px 16px;
+      font-size: 1.08rem;
+      font-weight: 800;
+      color: white;
+      background: linear-gradient(180deg, #4fd48c, #2ea76a);
+      box-shadow: 0 12px 26px rgba(46, 167, 106, 0.22);
+    }
+
+    .download-meta {
+      margin-top: 12px;
+      color: var(--muted);
+      font-size: 0.96rem;
+      text-align: center;
+    }
+
+    .modal {
+      position: fixed;
+      inset: 0;
+      display: none;
+      align-items: flex-end;
+      justify-content: center;
+      background: rgba(1, 7, 16, 0.64);
+      padding: 16px 12px;
+      z-index: 999;
+    }
+
+    .modal.show { display: flex; }
+
+    .modal-card {
+      width: 100%;
+      max-width: 820px;
+      max-height: 88vh;
+      overflow: auto;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 28px 28px 20px 20px;
+      box-shadow: var(--shadow);
+      padding: 18px;
+    }
+
+    .modal-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      margin-bottom: 14px;
+    }
+
+    .modal-title {
+      margin: 0;
+      font-size: 1.45rem;
+      font-weight: 800;
+    }
+
+    .close-btn {
+      border: 0;
+      background: rgba(255,255,255,0.06);
+      color: var(--text);
+      border-radius: 14px;
+      padding: 12px 14px;
+      font-size: 1rem;
+      font-weight: 800;
+    }
+
+    .pre {
+      margin: 0;
+      white-space: pre-wrap;
+      word-break: break-word;
+      font-size: 0.98rem;
+      line-height: 1.5;
+      background: var(--card-2);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 16px;
+    }
+
+    .footer-note {
+      text-align: center;
+      color: var(--muted);
+      font-size: 0.9rem;
+      padding-bottom: 10px;
+    }
+
+    @media (min-width: 720px) {
+      body { padding: 24px; }
+      .actions { grid-template-columns: 1fr 1fr; }
+      .result-actions { grid-template-columns: 1fr 1fr; }
+      .modal { align-items: center; }
+      .modal-card { border-radius: 28px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <section class="hero">
+      <div class="hero-left">
+        <h1 class="title">Mastering IA</h1>
+        <div class="subtitle">Application mobile sombre / clair</div>
+      </div>
+      <button id="themeBtn" class="theme-btn" type="button">Mode clair</button>
+    </section>
+
+    <section class="card">
+      <h2 class="section-title">Importer un morceau</h2>
+
+      <div class="file-box">
+        <input id="audioFile" type="file" accept="audio/*" />
+        <div id="audioName" class="audio-name">Aucun fichier sélectionné</div>
+        <audio id="audioPreview" controls style="display:none;"></audio>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2 class="section-title">Instruction</h2>
+      <textarea
+        id="promptInput"
+        class="textarea"
+        placeholder="Décris le rendu voulu..."
+      >Rends ce son parfait. Je veux un rendu propre, puissant, équilibré et professionnel.</textarea>
+
+      <div class="actions">
+        <button id="analyzeBtn" class="btn primary" type="button">
+          Analyser et préparer le mastering
+        </button>
+        <button id="masterBtn" class="btn secondary" type="button">
+          Lancer la masterisation
+        </button>
+      </div>
+
+      <div class="actions">
+        <button id="splitBtn" class="btn v4" type="button">
+          Tester le découpage V4
+        </button>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2 class="section-title">Statut</h2>
+
+      <div id="statusBox" class="status-box">
+        En attente d’un fichier audio.
+      </div>
+
+      <div id="progressWrap" class="progress-wrap">
+        <div class="progress-head">
+          <span id="progressLabel">Traitement...</span>
+          <span id="progressPercent">0%</span>
+        </div>
+        <div class="progress-track">
+          <div id="progressBar" class="progress-bar"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2 class="section-title">Résumé rapide</h2>
+      <div id="summaryBox" class="summary-box">
+        <div class="summary-grid" id="summaryGrid">
+          <div class="metric">
+            <div class="metric-title">Durée</div>
+            <div class="metric-value">-</div>
+          </div>
+          <div class="metric">
+            <div class="metric-title">LUFS</div>
+            <div class="metric-value">-</div>
+          </div>
+          <div class="metric">
+            <div class="metric-title">Dynamique</div>
+            <div class="metric-value">-</div>
+          </div>
+          <div class="metric">
+            <div class="metric-title">Grave</div>
+            <div class="metric-value">-</div>
+          </div>
+        </div>
+        <div class="mini-note" id="miniNote">
+          L’analyse détaillée apparaîtra ici après le premier traitement.
+        </div>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2 class="section-title">Analyse / plan / V4</h2>
+      <div id="compactResult" class="compact-box">
+        Aucun résultat pour le moment.
+      </div>
+
+      <div class="result-actions">
+        <button id="openModalBtn" class="btn secondary" type="button">
+          Ouvrir la fenêtre dédiée
+        </button>
+        <button id="copyBtn" class="btn secondary" type="button">
+          Copier le résultat
+        </button>
+      </div>
+
+      <div id="downloadBox" class="download-box">
+        <a id="downloadLink" class="download-link" href="#" download>
+          Télécharger le fichier final
+        </a>
+        <div id="downloadMeta" class="download-meta"></div>
+      </div>
+    </section>
+
+    <div class="footer-note">
+      V4 étape 1 - test du découpage automatique par blocs.
+    </div>
+  </div>
+
+  <div id="resultModal" class="modal">
+    <div class="modal-card">
+      <div class="modal-head">
+        <h3 class="modal-title">Résultat détaillé</h3>
+        <button id="closeModalBtn" class="close-btn" type="button">Fermer</button>
+      </div>
+      <pre id="resultPre" class="pre">Aucun résultat pour le moment.</pre>
+    </div>
+  </div>
+
+  <script>
+    const BACKEND_URL = "https://mastering-ia-app.onrender.com";
+
+    const audioFile = document.getElementById("audioFile");
+    const audioName = document.getElementById("audioName");
+    const audioPreview = document.getElementById("audioPreview");
+    const promptInput = document.getElementById("promptInput");
+    const analyzeBtn = document.getElementById("analyzeBtn");
+    const masterBtn = document.getElementById("masterBtn");
+    const splitBtn = document.getElementById("splitBtn");
+    const statusBox = document.getElementById("statusBox");
+    const progressWrap = document.getElementById("progressWrap");
+    const progressBar = document.getElementById("progressBar");
+    const progressLabel = document.getElementById("progressLabel");
+    const progressPercent = document.getElementById("progressPercent");
+    const compactResult = document.getElementById("compactResult");
+    const openModalBtn = document.getElementById("openModalBtn");
+    const copyBtn = document.getElementById("copyBtn");
+    const resultModal = document.getElementById("resultModal");
+    const closeModalBtn = document.getElementById("closeModalBtn");
+    const resultPre = document.getElementById("resultPre");
+    const summaryGrid = document.getElementById("summaryGrid");
+    const miniNote = document.getElementById("miniNote");
+    const downloadBox = document.getElementById("downloadBox");
+    const downloadLink = document.getElementById("downloadLink");
+    const downloadMeta = document.getElementById("downloadMeta");
+    const themeBtn = document.getElementById("themeBtn");
+
+    let lastAnalysis = null;
+    let lastPlanText = "";
+    let lastFullText = "";
+    let currentAudioUrl = null;
+    let currentDownloadUrl = null;
+
+    function setStatus(text, type = "") {
+      statusBox.textContent = text;
+      statusBox.className = "status-box";
+      if (type) statusBox.classList.add(type);
+    }
+
+    function setProgress(percent, label = "Traitement...") {
+      const safePercent = Math.max(0, Math.min(100, Number(percent) || 0));
+      progressWrap.classList.add("show");
+      progressBar.style.width = `${safePercent}%`;
+      progressPercent.textContent = `${Math.round(safePercent)}%`;
+      progressLabel.textContent = label;
+    }
+
+    function resetProgress() {
+      progressWrap.classList.remove("show");
+      progressBar.style.width = "0%";
+      progressPercent.textContent = "0%";
+      progressLabel.textContent = "Traitement...";
+    }
+
+    function setResultText(text) {
+      lastFullText = text || "Aucun résultat pour le moment.";
+      resultPre.textContent = lastFullText;
+      compactResult.textContent = lastFullText.length > 280
+        ? lastFullText.slice(0, 280) + "..."
+        : lastFullText;
+    }
+
+    function fillSummary(analysis) {
+      if (!analysis) {
+        summaryGrid.innerHTML = `
+          <div class="metric"><div class="metric-title">Durée</div><div class="metric-value">-</div></div>
+          <div class="metric"><div class="metric-title">LUFS</div><div class="metric-value">-</div></div>
+          <div class="metric"><div class="metric-title">Dynamique</div><div class="metric-value">-</div></div>
+          <div class="metric"><div class="metric-title">Grave</div><div class="metric-value">-</div></div>
+        `;
+        miniNote.textContent = "L’analyse détaillée apparaîtra ici après le premier traitement.";
+        return;
+      }
+
+      const duration = analysis.totalDurationSec ?? analysis.durationSec ?? "-";
+      const lufs = analysis.integratedLufs ?? "-";
+      const dynamics = analysis.dynamics ?? analysis.dynamicRangeDb ?? "-";
+      const lowEnd = analysis.lowEnd ?? "-";
+      const brightness = analysis.brightness ?? "-";
+      const stereo = analysis.stereoWidth ?? "-";
+
+      summaryGrid.innerHTML = `
+        <div class="metric">
+          <div class="metric-title">Durée</div>
+          <div class="metric-value">${duration}</div>
+        </div>
+        <div class="metric">
+          <div class="metric-title">LUFS</div>
+          <div class="metric-value">${lufs}</div>
+        </div>
+        <div class="metric">
+          <div class="metric-title">Dynamique</div>
+          <div class="metric-value">${dynamics}</div>
+        </div>
+        <div class="metric">
+          <div class="metric-title">Grave</div>
+          <div class="metric-value">${lowEnd}</div>
+        </div>
+      `;
+
+      miniNote.textContent = `Brillance : ${brightness} | Stéréo : ${stereo}`;
+    }
+
+    function clearDownload() {
+      downloadBox.classList.remove("show");
+      downloadLink.removeAttribute("href");
+      downloadMeta.textContent = "";
+      if (currentDownloadUrl) {
+        URL.revokeObjectURL(currentDownloadUrl);
+        currentDownloadUrl = null;
+      }
+    }
+
+    function showDownload(blob, filename = "master_final.wav") {
+      clearDownload();
+      currentDownloadUrl = URL.createObjectURL(blob);
+      downloadLink.href = currentDownloadUrl;
+      downloadLink.download = filename;
+      downloadMeta.textContent = `Fichier prêt : ${filename}`;
+      downloadBox.classList.add("show");
+    }
+
+    function toggleTheme() {
+      document.body.classList.toggle("light");
+      themeBtn.textContent = document.body.classList.contains("light")
+        ? "Mode sombre"
+        : "Mode clair";
+      localStorage.setItem("mastering-theme", document.body.classList.contains("light") ? "light" : "dark");
+    }
+
+    const savedTheme = localStorage.getItem("mastering-theme");
+    if (savedTheme === "light") {
+      document.body.classList.add("light");
+      themeBtn.textContent = "Mode sombre";
+    }
+
+    themeBtn.addEventListener("click", toggleTheme);
+
+    audioFile.addEventListener("change", () => {
+      const file = audioFile.files[0];
+
+      if (!file) {
+        audioName.textContent = "Aucun fichier sélectionné";
+        audioPreview.style.display = "none";
+        audioPreview.removeAttribute("src");
+        if (currentAudioUrl) {
+          URL.revokeObjectURL(currentAudioUrl);
+          currentAudioUrl = null;
+        }
+        return;
+      }
+
+      audioName.textContent = file.name;
+
+      if (currentAudioUrl) {
+        URL.revokeObjectURL(currentAudioUrl);
+      }
+
+      currentAudioUrl = URL.createObjectURL(file);
+      audioPreview.src = currentAudioUrl;
+      audioPreview.style.display = "block";
+
+      setStatus("Fichier chargé. Prêt pour l’analyse ou le test V4.", "success");
+      clearDownload();
+    });
+
+    openModalBtn.addEventListener("click", () => {
+      resultModal.classList.add("show");
+    });
+
+    closeModalBtn.addEventListener("click", () => {
+      resultModal.classList.remove("show");
+    });
+
+    resultModal.addEventListener("click", (e) => {
+      if (e.target === resultModal) resultModal.classList.remove("show");
+    });
+
+    copyBtn.addEventListener("click", async () => {
+      try {
+        await navigator.clipboard.writeText(lastFullText || "Aucun résultat");
+        setStatus("Résultat copié dans le presse-papiers.", "success");
+      } catch {
+        setStatus("Copie impossible sur ce navigateur.", "warning");
+      }
+    });
+
+    function getSuggestedFilename(originalName) {
+      const safeBase = (originalName || "master")
+        .replace(/\.[^/.]+$/, "")
+        .replace(/[^a-zA-Z0-9-_]/g, "_");
+      return `${safeBase}_master.wav`;
+    }
+
+    analyzeBtn.addEventListener("click", async () => {
+      try {
+        const file = audioFile.files[0];
+        if (!file) {
+          setStatus("Ajoute d’abord un fichier audio.", "error");
+          return;
+        }
+
+        clearDownload();
+        resetProgress();
+        setProgress(10, "Préparation de l’analyse...");
+        setStatus("Analyse en cours...", "");
+
+        const formData = new FormData();
+        formData.append("audio", file);
+
+        const analyzeResponse = await fetch(`${BACKEND_URL}/api/analyze`, {
+          method: "POST",
+          body: formData
+        });
+
+        const rawText = await analyzeResponse.text();
+
+        let analyzeData;
+        try {
+          analyzeData = JSON.parse(rawText);
+        } catch {
+          throw new Error("Réponse backend non JSON : " + rawText);
+        }
+
+        if (!analyzeResponse.ok || !analyzeData.ok) {
+          throw new Error(analyzeData.error || `Erreur HTTP ${analyzeResponse.status}`);
+        }
+
+        lastAnalysis = analyzeData.analysis;
+        fillSummary(lastAnalysis);
+        setProgress(55, "Analyse reçue, préparation du plan IA...");
+
+        const planResponse = await fetch(`${BACKEND_URL}/api/mastering-plan`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            userPrompt: promptInput.value,
+            analysis: lastAnalysis
+          })
+        });
+
+        const planRawText = await planResponse.text();
+
+        let planData;
+        try {
+          planData = JSON.parse(planRawText);
+        } catch {
+          throw new Error("Réponse plan non JSON : " + planRawText);
+        }
+
+        if (!planResponse.ok || !planData.ok) {
+          throw new Error(planData.error || `Erreur HTTP ${planResponse.status}`);
+        }
+
+        lastPlanText = planData.result || "";
+        setProgress(100, "Analyse et plan terminés");
+
+        const fullText =
+          "Analyse :\n" +
+          JSON.stringify(lastAnalysis, null, 2) +
+          "\n\nPlan IA :\n" +
+          lastPlanText;
+
+        setResultText(fullText);
+        setStatus("Analyse et plan générés avec succès.", "success");
+      } catch (error) {
+        resetProgress();
+        setStatus("Erreur détaillée : " + (error?.message || "analyse impossible"), "error");
+      }
+    });
+
+    masterBtn.addEventListener("click", async () => {
+      try {
+        const file = audioFile.files[0];
+
+        if (!file) {
+          setStatus("Ajoute d’abord un fichier audio.", "error");
+          return;
+        }
+
+        if (!lastAnalysis) {
+          setStatus("Fais d’abord l’analyse avant la masterisation.", "warning");
+          return;
+        }
+
+        clearDownload();
+        resetProgress();
+        setProgress(8, "Préparation de la masterisation...");
+        setStatus("Masterisation réelle en cours... cela peut prendre un peu de temps.", "");
+
+        const formData = new FormData();
+        formData.append("audio", file);
+        formData.append("userPrompt", promptInput.value);
+        formData.append("analysis", JSON.stringify(lastAnalysis));
+
+        setProgress(22, "Envoi du fichier au moteur audio...");
+
+        const fakeProgress = [
+          [38, "Analyse finale du signal..."],
+          [57, "Construction de la chaîne de mastering..."],
+          [76, "Traitement audio en cours..."],
+          [92, "Finalisation du fichier..."]
+        ];
+
+        let stepIndex = 0;
+        const progressTimer = setInterval(() => {
+          if (stepIndex < fakeProgress.length) {
+            const [p, label] = fakeProgress[stepIndex];
+            setProgress(p, label);
+            stepIndex += 1;
+          }
+        }, 1800);
+
+        const response = await fetch(`${BACKEND_URL}/api/master`, {
+          method: "POST",
+          body: formData
+        });
+
+        clearInterval(progressTimer);
+
+        if (!response.ok) {
+          const text = await response.text();
+          let errorMsg = text;
+          try {
+            const data = JSON.parse(text);
+            errorMsg = data.error || text;
+          } catch (_) {}
+          throw new Error(errorMsg || `Erreur HTTP ${response.status}`);
+        }
+
+        const blob = await response.blob();
+        setProgress(100, "Fichier final prêt");
+        showDownload(blob, getSuggestedFilename(file.name));
+        setStatus("Masterisation terminée. Le fichier final est prêt.", "success");
+      } catch (error) {
+        resetProgress();
+        setStatus("Erreur : " + (error?.message || "masterisation impossible"), "error");
+      }
+    });
+
+    splitBtn.addEventListener("click", async () => {
+      try {
+        const file = audioFile.files[0];
+
+        if (!file) {
+          setStatus("Ajoute d’abord un fichier audio.", "error");
+          return;
+        }
+
+        clearDownload();
+        resetProgress();
+        setProgress(12, "Préparation du test V4...");
+        setStatus("Découpage V4 en cours...", "");
+
+        const formData = new FormData();
+        formData.append("audio", file);
+
+        const response = await fetch(`${BACKEND_URL}/api/split-chunks`, {
+          method: "POST",
+          body: formData
+        });
+
+        const rawText = await response.text();
+
+        let data;
+        try {
+          data = JSON.parse(rawText);
+        } catch {
+          throw new Error("Réponse backend non JSON : " + rawText);
+        }
+
+        if (!response.ok || !data.ok) {
+          throw new Error(data.error || `Erreur HTTP ${response.status}`);
+        }
+
+        const split = data.split;
+        setProgress(100, "Découpage terminé");
+
+        const chunkCount = split.chunkCount ?? 0;
+        const totalDuration = split.totalDurationSec ?? "-";
+        const chunkSeconds = split.chunkSeconds ?? "-";
+        const firstChunks = Array.isArray(split.chunks) ? split.chunks.slice(0, 5) : [];
+
+        const detail =
+          "V4 - Découpage automatique validé\n\n" +
+          "Durée totale : " + totalDuration + " sec\n" +
+          "Taille des blocs : " + chunkSeconds + " sec\n" +
+          "Nombre de blocs : " + chunkCount + "\n" +
+          "Sample rate : " + (split.sampleRate ?? "-") + "\n" +
+          "Canaux : " + (split.channels ?? "-") + "\n" +
+          "Session ID : " + (split.sessionId ?? "-") + "\n\n" +
+          "Aperçu des premiers blocs :\n" +
+          JSON.stringify(firstChunks, null, 2);
+
+        setResultText(detail);
+        setStatus("Découpage V4 terminé avec succès.", "success");
+
+        summaryGrid.innerHTML = `
+          <div class="metric">
+            <div class="metric-title">Durée totale</div>
+            <div class="metric-value">${totalDuration}</div>
+          </div>
+          <div class="metric">
+            <div class="metric-title">Nb blocs</div>
+            <div class="metric-value">${chunkCount}</div>
+          </div>
+          <div class="metric">
+            <div class="metric-title">Taille bloc</div>
+            <div class="metric-value">${chunkSeconds}s</div>
+          </div>
+          <div class="metric">
+            <div class="metric-title">Canaux</div>
+            <div class="metric-value">${split.channels ?? "-"}</div>
+          </div>
+        `;
+
+        miniNote.textContent = "Étape 1 V4 validée si les blocs sont bien générés et ordonnés.";
+      } catch (error) {
+        resetProgress();
+        setStatus("Erreur V4 : " + (error?.message || "découpage impossible"), "error");
+      }
+    });
+
+    fillSummary(null);
+    setResultText("Aucun résultat pour le moment.");
+  </script>
+</body>
+</html>
