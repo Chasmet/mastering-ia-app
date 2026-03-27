@@ -1,0 +1,827 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"
+  />
+  <title>Mastering IA</title>
+  <style>
+    :root {
+      --bg: #07111f;
+      --bg-soft: #0c1930;
+      --card: rgba(14, 28, 52, 0.92);
+      --card-2: rgba(18, 35, 64, 0.98);
+      --text: #eef4ff;
+      --muted: #a8b8d8;
+      --border: rgba(140, 170, 230, 0.18);
+      --primary: #7da2ff;
+      --primary-2: #9db8ff;
+      --success-bg: rgba(32, 91, 62, 0.35);
+      --success-border: rgba(92, 211, 149, 0.25);
+      --error-bg: rgba(116, 30, 44, 0.32);
+      --error-border: rgba(255, 126, 126, 0.26);
+      --warning-bg: rgba(117, 88, 21, 0.28);
+      --warning-border: rgba(255, 206, 96, 0.24);
+      --shadow: 0 16px 40px rgba(0, 0, 0, 0.28);
+    }
+
+    body.light {
+      --bg: #eef4ff;
+      --bg-soft: #dfeaff;
+      --card: rgba(255, 255, 255, 0.96);
+      --card-2: rgba(246, 249, 255, 0.98);
+      --text: #10203c;
+      --muted: #5b6f94;
+      --border: rgba(90, 120, 185, 0.18);
+      --primary: #5c82ff;
+      --primary-2: #7e9eff;
+      --success-bg: rgba(193, 246, 216, 0.68);
+      --success-border: rgba(60, 150, 100, 0.22);
+      --error-bg: rgba(255, 219, 226, 0.86);
+      --error-border: rgba(199, 65, 91, 0.20);
+      --warning-bg: rgba(255, 239, 196, 0.88);
+      --warning-border: rgba(190, 140, 32, 0.20);
+      --shadow: 0 18px 42px rgba(40, 65, 120, 0.14);
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      min-height: 100%;
+      font-family: Inter, Arial, sans-serif;
+      background:
+        radial-gradient(circle at top, rgba(91, 129, 255, 0.22), transparent 35%),
+        linear-gradient(180deg, var(--bg-soft) 0%, var(--bg) 55%, var(--bg) 100%);
+      color: var(--text);
+    }
+
+    body { padding: 18px 14px 30px; }
+
+    .app {
+      max-width: 760px;
+      margin: 0 auto;
+      display: grid;
+      gap: 16px;
+    }
+
+    .hero {
+      background: linear-gradient(180deg, rgba(18, 34, 63, 0.95), rgba(13, 25, 47, 0.92));
+      border: 1px solid var(--border);
+      border-radius: 28px;
+      padding: 18px;
+      box-shadow: var(--shadow);
+      display: flex;
+      gap: 14px;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    body.light .hero {
+      background: linear-gradient(180deg, rgba(255,255,255,0.97), rgba(242,247,255,0.96));
+    }
+
+    .hero-left { min-width: 0; }
+
+    .title {
+      margin: 0;
+      font-size: 2rem;
+      line-height: 1;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+    }
+
+    .subtitle {
+      margin-top: 6px;
+      color: var(--muted);
+      font-size: 0.98rem;
+    }
+
+    .theme-btn {
+      border: 0;
+      background: linear-gradient(180deg, var(--primary-2), var(--primary));
+      color: white;
+      border-radius: 18px;
+      padding: 16px 18px;
+      min-width: 118px;
+      font-size: 1.1rem;
+      font-weight: 800;
+      box-shadow: 0 10px 24px rgba(70, 111, 255, 0.25);
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      box-shadow: var(--shadow);
+      padding: 18px;
+    }
+
+    .section-title {
+      margin: 0 0 14px;
+      font-size: 1.55rem;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+    }
+
+    .info-box,
+    .status-box,
+    .upload-box,
+    .result-box,
+    .summary-box,
+    .textarea {
+      width: 100%;
+      background: var(--card-2);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      color: var(--text);
+    }
+
+    .info-box,
+    .status-box,
+    .upload-box,
+    .result-box,
+    .summary-box {
+      padding: 16px;
+    }
+
+    .info-box {
+      line-height: 1.45;
+      color: var(--muted);
+      font-size: 1rem;
+    }
+
+    .status-box.success {
+      background: var(--success-bg);
+      border-color: var(--success-border);
+    }
+
+    .status-box.error {
+      background: var(--error-bg);
+      border-color: var(--error-border);
+    }
+
+    .status-box.warning {
+      background: var(--warning-bg);
+      border-color: var(--warning-border);
+    }
+
+    .mode-switch {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .mode-btn {
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 16px 12px;
+      background: rgba(255,255,255,0.02);
+      color: var(--text);
+      font-size: 1rem;
+      font-weight: 800;
+      text-align: center;
+    }
+
+    .mode-btn.active {
+      border: 0;
+      background: linear-gradient(180deg, var(--primary-2), var(--primary));
+      color: white;
+      box-shadow: 0 12px 26px rgba(92, 130, 255, 0.26);
+    }
+
+    .field-title {
+      margin: 0 0 10px;
+      font-size: 1rem;
+      font-weight: 800;
+    }
+
+    .upload-box input {
+      width: 100%;
+      color: var(--text);
+      font-size: 1rem;
+    }
+
+    .file-name {
+      margin-top: 10px;
+      color: var(--muted);
+      font-size: 0.97rem;
+      word-break: break-word;
+    }
+
+    audio {
+      width: 100%;
+      margin-top: 12px;
+      border-radius: 16px;
+      display: none;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    .textarea {
+      min-height: 120px;
+      resize: vertical;
+      padding: 18px;
+      font-size: 1.05rem;
+      line-height: 1.45;
+      outline: none;
+    }
+
+    .actions {
+      display: grid;
+      gap: 12px;
+      margin-top: 14px;
+    }
+
+    .btn {
+      width: 100%;
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 18px 16px;
+      font-size: 1.03rem;
+      font-weight: 800;
+      color: var(--text);
+      background: rgba(255,255,255,0.02);
+    }
+
+    .btn.primary {
+      border: 0;
+      color: white;
+      background: linear-gradient(180deg, var(--primary-2), var(--primary));
+      box-shadow: 0 12px 26px rgba(92, 130, 255, 0.26);
+    }
+
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .metric {
+      background: rgba(255,255,255,0.02);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 12px;
+    }
+
+    .metric-title {
+      color: var(--muted);
+      font-size: 0.9rem;
+      margin-bottom: 6px;
+    }
+
+    .metric-value {
+      font-size: 1.02rem;
+      font-weight: 800;
+      word-break: break-word;
+    }
+
+    .mini-note {
+      margin-top: 12px;
+      color: var(--muted);
+      font-size: 0.95rem;
+      line-height: 1.4;
+    }
+
+    .progress-wrap {
+      margin-top: 16px;
+      display: none;
+    }
+
+    .progress-wrap.show { display: block; }
+
+    .progress-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: center;
+      margin-bottom: 10px;
+      color: var(--muted);
+      font-size: 1rem;
+      font-weight: 700;
+    }
+
+    .progress-track {
+      height: 18px;
+      width: 100%;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      overflow: hidden;
+    }
+
+    .progress-bar {
+      height: 100%;
+      width: 0%;
+      border-radius: 999px;
+      background: linear-gradient(90deg, var(--primary), var(--primary-2));
+      transition: width 0.35s ease;
+    }
+
+    .prelike {
+      white-space: pre-wrap;
+      word-break: break-word;
+      line-height: 1.45;
+      font-size: 0.98rem;
+    }
+
+    @media (min-width: 720px) {
+      body { padding: 24px; }
+      .actions { grid-template-columns: 1fr 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <section class="hero">
+      <div class="hero-left">
+        <h1 class="title">Mastering IA</h1>
+        <div class="subtitle">Mode standard ou qualité max</div>
+      </div>
+      <button id="themeBtn" class="theme-btn" type="button">Mode clair</button>
+    </section>
+
+    <section class="card">
+      <h2 class="section-title">Mode de traitement</h2>
+      <div class="info-box">
+        Pour une meilleure qualité, envoie la voix et l’instrumental séparément.
+        Le mode fichier complet reste disponible, mais le traitement sera moins précis.
+      </div>
+
+      <div class="mode-switch" style="margin-top:14px;">
+        <button id="modeFullBtn" class="mode-btn active" type="button">Fichier complet</button>
+        <button id="modeStemsBtn" class="mode-btn" type="button">Voix + instru</button>
+      </div>
+    </section>
+
+    <section class="card" id="fullModeSection">
+      <h2 class="section-title">Importer un morceau complet</h2>
+      <div class="upload-box">
+        <div class="field-title">Fichier complet</div>
+        <input id="fullAudioFile" type="file" accept="audio/*" />
+        <div id="fullAudioName" class="file-name">Aucun fichier sélectionné</div>
+        <audio id="fullAudioPreview" controls></audio>
+      </div>
+    </section>
+
+    <section class="card hidden" id="stemsModeSection">
+      <h2 class="section-title">Importer voix + instru</h2>
+
+      <div class="upload-box" style="margin-bottom:14px;">
+        <div class="field-title">Piste voix</div>
+        <input id="voiceFile" type="file" accept="audio/*" />
+        <div id="voiceFileName" class="file-name">Aucun fichier voix sélectionné</div>
+        <audio id="voicePreview" controls></audio>
+      </div>
+
+      <div class="upload-box">
+        <div class="field-title">Piste instrumental</div>
+        <input id="instruFile" type="file" accept="audio/*" />
+        <div id="instruFileName" class="file-name">Aucun fichier instrumental sélectionné</div>
+        <audio id="instruPreview" controls></audio>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2 class="section-title">Instruction</h2>
+      <textarea
+        id="promptInput"
+        class="textarea"
+        placeholder="Décris le rendu voulu..."
+      >Rends ce son parfait. Je veux un rendu propre, puissant, équilibré et professionnel.</textarea>
+
+      <div class="actions">
+        <button id="analyzeBtn" class="btn primary" type="button">Analyser</button>
+        <button id="masterBtn" class="btn" type="button">Traiter</button>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2 class="section-title">Statut</h2>
+      <div id="statusBox" class="status-box">
+        Choisis un mode puis ajoute tes fichiers.
+      </div>
+
+      <div id="progressWrap" class="progress-wrap">
+        <div class="progress-head">
+          <span id="progressLabel">Traitement...</span>
+          <span id="progressPercent">0%</span>
+        </div>
+        <div class="progress-track">
+          <div id="progressBar" class="progress-bar"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2 class="section-title">Résumé rapide</h2>
+      <div class="summary-box">
+        <div class="summary-grid" id="summaryGrid">
+          <div class="metric">
+            <div class="metric-title">Mode</div>
+            <div class="metric-value">Fichier complet</div>
+          </div>
+          <div class="metric">
+            <div class="metric-title">Qualité attendue</div>
+            <div class="metric-value">Standard</div>
+          </div>
+          <div class="metric">
+            <div class="metric-title">Voix séparée</div>
+            <div class="metric-value">Non</div>
+          </div>
+          <div class="metric">
+            <div class="metric-title">Instrumental séparé</div>
+            <div class="metric-value">Non</div>
+          </div>
+        </div>
+        <div id="miniNote" class="mini-note">
+          Le mode voix + instru donnera un meilleur traitement quand il sera branché au backend.
+        </div>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2 class="section-title">Résultat</h2>
+      <div id="resultBox" class="result-box prelike">
+        Interface prête pour la suite.
+      </div>
+    </section>
+  </div>
+
+  <script>
+    const BACKEND_URL = "https://mastering-ia-app.onrender.com";
+
+    const body = document.body;
+    const themeBtn = document.getElementById("themeBtn");
+
+    const modeFullBtn = document.getElementById("modeFullBtn");
+    const modeStemsBtn = document.getElementById("modeStemsBtn");
+    const fullModeSection = document.getElementById("fullModeSection");
+    const stemsModeSection = document.getElementById("stemsModeSection");
+
+    const fullAudioFile = document.getElementById("fullAudioFile");
+    const fullAudioName = document.getElementById("fullAudioName");
+    const fullAudioPreview = document.getElementById("fullAudioPreview");
+
+    const voiceFile = document.getElementById("voiceFile");
+    const voiceFileName = document.getElementById("voiceFileName");
+    const voicePreview = document.getElementById("voicePreview");
+
+    const instruFile = document.getElementById("instruFile");
+    const instruFileName = document.getElementById("instruFileName");
+    const instruPreview = document.getElementById("instruPreview");
+
+    const analyzeBtn = document.getElementById("analyzeBtn");
+    const masterBtn = document.getElementById("masterBtn");
+
+    const statusBox = document.getElementById("statusBox");
+    const progressWrap = document.getElementById("progressWrap");
+    const progressBar = document.getElementById("progressBar");
+    const progressLabel = document.getElementById("progressLabel");
+    const progressPercent = document.getElementById("progressPercent");
+
+    const summaryGrid = document.getElementById("summaryGrid");
+    const miniNote = document.getElementById("miniNote");
+    const resultBox = document.getElementById("resultBox");
+
+    let currentMode = "full";
+    let fullAudioUrl = null;
+    let voiceAudioUrl = null;
+    let instruAudioUrl = null;
+    let lastFullAnalysis = null;
+    let lastVoiceAnalysis = null;
+    let lastInstruAnalysis = null;
+
+    function setStatus(text, type = "") {
+      statusBox.textContent = text;
+      statusBox.className = "status-box";
+      if (type) statusBox.classList.add(type);
+    }
+
+    function setProgress(percent, label = "Traitement...") {
+      const safePercent = Math.max(0, Math.min(100, Number(percent) || 0));
+      progressWrap.classList.add("show");
+      progressBar.style.width = `${safePercent}%`;
+      progressPercent.textContent = `${Math.round(safePercent)}%`;
+      progressLabel.textContent = label;
+    }
+
+    function resetProgress() {
+      progressWrap.classList.remove("show");
+      progressBar.style.width = "0%";
+      progressPercent.textContent = "0%";
+      progressLabel.textContent = "Traitement...";
+    }
+
+    function updateSummaryDefault() {
+      if (currentMode === "full") {
+        summaryGrid.innerHTML = `
+          <div class="metric">
+            <div class="metric-title">Mode</div>
+            <div class="metric-value">Fichier complet</div>
+          </div>
+          <div class="metric">
+            <div class="metric-title">Qualité attendue</div>
+            <div class="metric-value">Standard</div>
+          </div>
+          <div class="metric">
+            <div class="metric-title">Voix séparée</div>
+            <div class="metric-value">Non</div>
+          </div>
+          <div class="metric">
+            <div class="metric-title">Instrumental séparé</div>
+            <div class="metric-value">Non</div>
+          </div>
+        `;
+        miniNote.textContent =
+          "Mode simple et rapide. Le traitement sera moins précis que le mode voix + instru.";
+      } else {
+        summaryGrid.innerHTML = `
+          <div class="metric">
+            <div class="metric-title">Mode</div>
+            <div class="metric-value">Voix + instru</div>
+          </div>
+          <div class="metric">
+            <div class="metric-title">Qualité attendue</div>
+            <div class="metric-value">Max</div>
+          </div>
+          <div class="metric">
+            <div class="metric-title">Voix séparée</div>
+            <div class="metric-value">${voiceFile.files[0] ? "Oui" : "Non"}</div>
+          </div>
+          <div class="metric">
+            <div class="metric-title">Instrumental séparé</div>
+            <div class="metric-value">${instruFile.files[0] ? "Oui" : "Non"}</div>
+          </div>
+        `;
+        miniNote.textContent =
+          "Mode recommandé pour un rendu plus précis et plus professionnel.";
+      }
+    }
+
+    function updateSummaryFromFullAnalysis(analysis) {
+      summaryGrid.innerHTML = `
+        <div class="metric">
+          <div class="metric-title">Durée</div>
+          <div class="metric-value">${analysis.totalDurationSec ?? "-"}</div>
+        </div>
+        <div class="metric">
+          <div class="metric-title">LUFS</div>
+          <div class="metric-value">${analysis.integratedLufs ?? "-"}</div>
+        </div>
+        <div class="metric">
+          <div class="metric-title">Dynamique</div>
+          <div class="metric-value">${analysis.dynamics ?? "-"}</div>
+        </div>
+        <div class="metric">
+          <div class="metric-title">Grave</div>
+          <div class="metric-value">${analysis.lowEnd ?? "-"}</div>
+        </div>
+      `;
+      miniNote.textContent = `Mode standard analysé. Brillance : ${analysis.brightness ?? "-"} | Stéréo : ${analysis.stereoWidth ?? "-"}`;
+    }
+
+    function updateSummaryFromStemAnalyses(voiceAnalysis, instruAnalysis) {
+      summaryGrid.innerHTML = `
+        <div class="metric">
+          <div class="metric-title">Voix LUFS</div>
+          <div class="metric-value">${voiceAnalysis.integratedLufs ?? "-"}</div>
+        </div>
+        <div class="metric">
+          <div class="metric-title">Instru LUFS</div>
+          <div class="metric-value">${instruAnalysis.integratedLufs ?? "-"}</div>
+        </div>
+        <div class="metric">
+          <div class="metric-title">Voix présence</div>
+          <div class="metric-value">${voiceAnalysis.vocalPresence ?? "-"}</div>
+        </div>
+        <div class="metric">
+          <div class="metric-title">Instru dynamique</div>
+          <div class="metric-value">${instruAnalysis.dynamics ?? "-"}</div>
+        </div>
+      `;
+      miniNote.textContent = `Mode qualité max analysé. Voix grave : ${voiceAnalysis.lowEnd ?? "-"} | Instru grave : ${instruAnalysis.lowEnd ?? "-"}`;
+    }
+
+    function switchMode(mode) {
+      currentMode = mode;
+      lastFullAnalysis = null;
+      lastVoiceAnalysis = null;
+      lastInstruAnalysis = null;
+      resetProgress();
+
+      if (mode === "full") {
+        modeFullBtn.classList.add("active");
+        modeStemsBtn.classList.remove("active");
+        fullModeSection.classList.remove("hidden");
+        stemsModeSection.classList.add("hidden");
+        setStatus("Mode fichier complet activé.", "success");
+      } else {
+        modeStemsBtn.classList.add("active");
+        modeFullBtn.classList.remove("active");
+        stemsModeSection.classList.remove("hidden");
+        fullModeSection.classList.add("hidden");
+        setStatus("Mode voix + instru activé. Meilleure qualité recommandée.", "success");
+      }
+
+      updateSummaryDefault();
+      resultBox.textContent = "Interface prête pour la suite.";
+    }
+
+    function bindAudioInput(inputEl, nameEl, audioEl, urlRefName) {
+      inputEl.addEventListener("change", () => {
+        const file = inputEl.files[0];
+
+        if (!file) {
+          nameEl.textContent = "Aucun fichier sélectionné";
+          audioEl.style.display = "none";
+          audioEl.removeAttribute("src");
+
+          if (urlRefName === "full" && fullAudioUrl) {
+            URL.revokeObjectURL(fullAudioUrl);
+            fullAudioUrl = null;
+          }
+          if (urlRefName === "voice" && voiceAudioUrl) {
+            URL.revokeObjectURL(voiceAudioUrl);
+            voiceAudioUrl = null;
+          }
+          if (urlRefName === "instru" && instruAudioUrl) {
+            URL.revokeObjectURL(instruAudioUrl);
+            instruAudioUrl = null;
+          }
+
+          updateSummaryDefault();
+          return;
+        }
+
+        nameEl.textContent = file.name;
+        const newUrl = URL.createObjectURL(file);
+
+        if (urlRefName === "full") {
+          if (fullAudioUrl) URL.revokeObjectURL(fullAudioUrl);
+          fullAudioUrl = newUrl;
+        }
+        if (urlRefName === "voice") {
+          if (voiceAudioUrl) URL.revokeObjectURL(voiceAudioUrl);
+          voiceAudioUrl = newUrl;
+        }
+        if (urlRefName === "instru") {
+          if (instruAudioUrl) URL.revokeObjectURL(instruAudioUrl);
+          instruAudioUrl = newUrl;
+        }
+
+        audioEl.src = newUrl;
+        audioEl.style.display = "block";
+
+        if (currentMode === "full") {
+          setStatus("Fichier complet chargé.", "success");
+        } else {
+          setStatus("Fichiers voix + instru chargés.", "success");
+        }
+
+        updateSummaryDefault();
+      });
+    }
+
+    function toggleTheme() {
+      body.classList.toggle("light");
+      themeBtn.textContent = body.classList.contains("light")
+        ? "Mode sombre"
+        : "Mode clair";
+      localStorage.setItem(
+        "mastering-theme",
+        body.classList.contains("light") ? "light" : "dark"
+      );
+    }
+
+    const savedTheme = localStorage.getItem("mastering-theme");
+    if (savedTheme === "light") {
+      body.classList.add("light");
+      themeBtn.textContent = "Mode sombre";
+    }
+
+    themeBtn.addEventListener("click", toggleTheme);
+    modeFullBtn.addEventListener("click", () => switchMode("full"));
+    modeStemsBtn.addEventListener("click", () => switchMode("stems"));
+
+    bindAudioInput(fullAudioFile, fullAudioName, fullAudioPreview, "full");
+    bindAudioInput(voiceFile, voiceFileName, voicePreview, "voice");
+    bindAudioInput(instruFile, instruFileName, instruPreview, "instru");
+
+    analyzeBtn.addEventListener("click", async () => {
+      try {
+        resetProgress();
+        setProgress(10, "Préparation...");
+
+        if (currentMode === "full") {
+          const file = fullAudioFile.files[0];
+          if (!file) {
+            setStatus("Ajoute un fichier complet.", "error");
+            return;
+          }
+
+          setStatus("Analyse du fichier complet en cours...", "");
+          const formData = new FormData();
+          formData.append("audio", file);
+
+          const response = await fetch(`${BACKEND_URL}/api/analyze`, {
+            method: "POST",
+            body: formData
+          });
+
+          const rawText = await response.text();
+
+          let data;
+          try {
+            data = JSON.parse(rawText);
+          } catch {
+            throw new Error("Réponse backend non JSON : " + rawText);
+          }
+
+          if (!response.ok || !data.ok) {
+            throw new Error(data.error || `Erreur HTTP ${response.status}`);
+          }
+
+          lastFullAnalysis = data.analysis;
+          updateSummaryFromFullAnalysis(lastFullAnalysis);
+
+          resultBox.textContent =
+            "Analyse fichier complet :\n\n" +
+            JSON.stringify(lastFullAnalysis, null, 2);
+
+          setProgress(100, "Analyse terminée");
+          setStatus("Analyse du fichier complet terminée.", "success");
+          return;
+        }
+
+        const voice = voiceFile.files[0];
+        const instrumental = instruFile.files[0];
+
+        if (!voice || !instrumental) {
+          setStatus("Ajoute la voix et l’instrumental.", "error");
+          return;
+        }
+
+        setStatus("Analyse voix + instru en cours...", "");
+        setProgress(25, "Envoi des 2 pistes...");
+
+        const formData = new FormData();
+        formData.append("voice", voice);
+        formData.append("instrumental", instrumental);
+
+        const response = await fetch(`${BACKEND_URL}/api/analyze-stems`, {
+          method: "POST",
+          body: formData
+        });
+
+        const rawText = await response.text();
+
+        let data;
+        try {
+          data = JSON.parse(rawText);
+        } catch {
+          throw new Error("Réponse backend non JSON : " + rawText);
+        }
+
+        if (!response.ok || !data.ok) {
+          throw new Error(data.error || `Erreur HTTP ${response.status}`);
+        }
+
+        lastVoiceAnalysis = data.voice.analysis;
+        lastInstruAnalysis = data.instrumental.analysis;
+
+        updateSummaryFromStemAnalyses(lastVoiceAnalysis, lastInstruAnalysis);
+
+        resultBox.textContent =
+          "Analyse voix :\n\n" +
+          JSON.stringify(lastVoiceAnalysis, null, 2) +
+          "\n\nAnalyse instrumental :\n\n" +
+          JSON.stringify(lastInstruAnalysis, null, 2);
+
+        setProgress(100, "Analyse séparée terminée");
+        setStatus("Analyse voix + instru terminée.", "success");
+      } catch (error) {
+        resetProgress();
+        setStatus("Erreur : " + (error?.message || "analyse impossible"), "error");
+      }
+    });
+
+    masterBtn.addEventListener("click", () => {
+      resetProgress();
+      setProgress(100, "Étape analyse branchée");
+      if (currentMode === "full") {
+        setStatus("Mode fichier complet prêt pour l’étape traitement suivante.", "success");
+      } else {
+        setStatus("Mode voix + instru prêt pour l’étape traitement suivante.", "success");
+      }
+    });
+
+    updateSummaryDefault();
+  </script>
+</body>
+</html>
