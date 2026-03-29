@@ -1,0 +1,3065 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"
+  />
+  <title>Mastering IA</title>
+  <style>
+    :root {
+      --bg: #050b16;
+      --bg-2: #081122;
+      --bg-3: #0d1a33;
+      --surface: rgba(11, 21, 42, 0.88);
+      --surface-2: rgba(14, 27, 53, 0.96);
+      --surface-3: rgba(18, 34, 67, 0.98);
+      --surface-4: rgba(24, 44, 82, 0.98);
+      --text: #f4f8ff;
+      --muted: #9fb3d8;
+      --muted-2: #7f95bc;
+      --border: rgba(146, 181, 255, 0.14);
+      --border-strong: rgba(170, 200, 255, 0.2);
+      --primary: #8aa8ff;
+      --primary-2: #aec3ff;
+      --primary-3: #6a91ff;
+      --primary-soft: rgba(138, 168, 255, 0.14);
+      --gold: #ffd677;
+      --gold-soft: rgba(255, 214, 119, 0.14);
+      --success-bg: rgba(34, 98, 66, 0.32);
+      --success-border: rgba(98, 232, 164, 0.18);
+      --error-bg: rgba(130, 31, 47, 0.3);
+      --error-border: rgba(255, 130, 145, 0.2);
+      --warning-bg: rgba(126, 94, 28, 0.26);
+      --warning-border: rgba(255, 215, 110, 0.18);
+      --shadow: 0 18px 45px rgba(0, 0, 0, 0.34);
+      --shadow-soft: 0 10px 28px rgba(0, 0, 0, 0.24);
+      --shadow-glow:
+        0 0 0 1px rgba(255,255,255,0.02),
+        0 26px 70px rgba(53, 97, 198, 0.16),
+        inset 0 1px 0 rgba(255,255,255,0.03);
+      --radius-xl: 30px;
+      --radius-lg: 24px;
+      --radius-md: 20px;
+      --radius-sm: 16px;
+    }
+
+    body.light {
+      --bg: #eef4ff;
+      --bg-2: #e5eeff;
+      --bg-3: #dbe8ff;
+      --surface: rgba(255, 255, 255, 0.9);
+      --surface-2: rgba(250, 252, 255, 0.96);
+      --surface-3: rgba(244, 248, 255, 0.98);
+      --surface-4: rgba(235, 243, 255, 0.98);
+      --text: #112140;
+      --muted: #62779d;
+      --muted-2: #7a8eaf;
+      --border: rgba(95, 126, 190, 0.14);
+      --border-strong: rgba(95, 126, 190, 0.2);
+      --primary: #6b91ff;
+      --primary-2: #89a8ff;
+      --primary-3: #527bff;
+      --primary-soft: rgba(107, 145, 255, 0.1);
+      --gold: #c58d0c;
+      --gold-soft: rgba(197, 141, 12, 0.1);
+      --success-bg: rgba(204, 248, 224, 0.85);
+      --success-border: rgba(58, 150, 96, 0.2);
+      --error-bg: rgba(255, 225, 230, 0.95);
+      --error-border: rgba(220, 82, 104, 0.18);
+      --warning-bg: rgba(255, 242, 207, 0.95);
+      --warning-border: rgba(193, 145, 30, 0.2);
+      --shadow: 0 18px 42px rgba(42, 74, 145, 0.12);
+      --shadow-soft: 0 12px 28px rgba(42, 74, 145, 0.08);
+      --shadow-glow:
+        0 0 0 1px rgba(89, 121, 196, 0.04),
+        0 26px 60px rgba(80, 122, 218, 0.12),
+        inset 0 1px 0 rgba(255,255,255,0.5);
+    }
+
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      min-height: 100%;
+      font-family: Inter, Arial, sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at top left, rgba(98, 138, 255, 0.18), transparent 32%),
+        radial-gradient(circle at top right, rgba(111, 69, 255, 0.1), transparent 28%),
+        linear-gradient(180deg, var(--bg-3) 0%, var(--bg-2) 18%, var(--bg) 100%);
+    }
+
+    body {
+      padding: 14px 12px 34px;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background:
+        radial-gradient(circle at 50% -5%, rgba(165, 195, 255, 0.09), transparent 26%),
+        linear-gradient(to bottom, rgba(255,255,255,0.015), transparent 35%);
+      z-index: 0;
+    }
+
+    .app {
+      position: relative;
+      z-index: 1;
+      max-width: 1040px;
+      margin: 0 auto;
+      display: grid;
+      gap: 14px;
+    }
+
+    .hero,
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow-glow);
+      backdrop-filter: blur(12px);
+    }
+
+    .hero {
+      border-radius: var(--radius-xl);
+      padding: 18px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .hero::after {
+      content: "";
+      position: absolute;
+      inset: auto -120px -120px auto;
+      width: 280px;
+      height: 280px;
+      background: radial-gradient(circle, rgba(138,168,255,0.16) 0%, transparent 65%);
+      pointer-events: none;
+    }
+
+    .hero-head {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 16px;
+      align-items: start;
+    }
+
+    .hero-brand {
+      display: grid;
+      gap: 10px;
+      max-width: 640px;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      width: fit-content;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: var(--primary-soft);
+      border: 1px solid var(--border);
+      color: var(--text);
+      font-size: 0.84rem;
+      font-weight: 800;
+    }
+
+    .hero-title {
+      margin: 0;
+      font-size: 2.5rem;
+      line-height: 0.92;
+      font-weight: 950;
+      letter-spacing: -0.055em;
+      text-wrap: balance;
+    }
+
+    .hero-sub {
+      margin: 0;
+      max-width: 580px;
+      color: var(--muted);
+      font-size: 1rem;
+      line-height: 1.5;
+      text-wrap: balance;
+    }
+
+    .hero-actions {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 10px;
+      width: 100%;
+    }
+
+    .theme-btn,
+    .top-open-btn,
+    .quick-link {
+      min-height: 54px;
+      border-radius: 18px;
+      font-size: 1rem;
+      font-weight: 850;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 0 16px;
+      width: 100%;
+      transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
+    }
+
+    .theme-btn,
+    .quick-link.primary {
+      border: 0;
+      color: #fff;
+      background: linear-gradient(180deg, var(--primary-2), var(--primary));
+      box-shadow: 0 14px 34px rgba(87, 126, 255, 0.28);
+    }
+
+    .top-open-btn,
+    .quick-link.secondary {
+      border: 1px solid var(--border);
+      color: var(--text);
+      background: rgba(255,255,255,0.04);
+    }
+
+    .hero-actions button:active,
+    .quick-link:active,
+    .btn:active,
+    .mode-btn:active,
+    .tab-btn:active,
+    .collapse-toggle:active {
+      transform: scale(0.985);
+    }
+
+    .hero-bottom {
+      margin-top: 16px;
+      display: grid;
+      gap: 12px;
+    }
+
+    .chip-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 9px 12px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--border);
+      color: var(--text);
+      font-size: 0.9rem;
+      font-weight: 800;
+      line-height: 1;
+    }
+
+    .hero-grid {
+      display: grid;
+      gap: 12px;
+    }
+
+    .hero-mini-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .mini-stat,
+    .feature-card,
+    .metric,
+    .price-card,
+    .info-box,
+    .status-box,
+    .upload-box,
+    .summary-box,
+    .result-panel,
+    .tip-box,
+    .auth-panel,
+    .admin-panel,
+    .admin-item,
+    .client-item,
+    .tab-panel,
+    .art-card {
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-soft);
+    }
+
+    .mini-stat {
+      padding: 12px;
+      min-height: 112px;
+    }
+
+    .mini-stat-label {
+      color: var(--muted-2);
+      font-size: 0.84rem;
+      margin-bottom: 7px;
+      font-weight: 700;
+    }
+
+    .mini-stat-value {
+      font-size: 1rem;
+      line-height: 1.34;
+      font-weight: 850;
+      color: var(--text);
+    }
+
+    .art-card {
+      padding: 12px;
+      min-height: 138px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background:
+        radial-gradient(circle at 18% 18%, rgba(138, 168, 255, 0.16), transparent 35%),
+        linear-gradient(180deg, rgba(255,255,255,0.035), rgba(255,255,255,0.01));
+    }
+
+    .studio-svg {
+      width: 100%;
+      max-width: 340px;
+      height: auto;
+      display: block;
+    }
+
+    .card {
+      padding: 16px;
+      border-radius: var(--radius-lg);
+    }
+
+    .section-title {
+      margin: 0 0 10px;
+      font-size: 1.5rem;
+      line-height: 1.02;
+      font-weight: 900;
+      letter-spacing: -0.04em;
+    }
+
+    .subtle-title {
+      margin: 0;
+      color: var(--muted);
+      font-size: 0.96rem;
+      font-weight: 650;
+      line-height: 1.45;
+    }
+
+    .section-head {
+      display: grid;
+      gap: 6px;
+      margin-bottom: 12px;
+    }
+
+    .grid-2,
+    .grid-3,
+    .feature-grid,
+    .price-grid,
+    .admin-grid,
+    .auth-grid {
+      display: grid;
+      gap: 12px;
+    }
+
+    .feature-card {
+      padding: 14px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .feature-card::before {
+      content: "";
+      position: absolute;
+      inset: 0 auto auto 0;
+      width: 100%;
+      height: 2px;
+      background: linear-gradient(90deg, rgba(138,168,255,0), rgba(138,168,255,0.85), rgba(138,168,255,0));
+      opacity: 0.4;
+    }
+
+    .feature-title {
+      margin: 0 0 8px;
+      font-size: 1rem;
+      font-weight: 850;
+    }
+
+    .feature-text {
+      color: var(--muted);
+      font-size: 0.95rem;
+      line-height: 1.5;
+    }
+
+    .info-box,
+    .status-box,
+    .upload-box,
+    .summary-box,
+    .result-panel,
+    .tip-box,
+    .auth-panel,
+    .admin-panel,
+    .admin-item,
+    .client-item,
+    .tab-panel {
+      padding: 14px;
+    }
+
+    .info-box,
+    .tip-box {
+      color: var(--muted);
+      line-height: 1.55;
+      font-size: 0.96rem;
+    }
+
+    .status-box {
+      color: var(--text);
+      line-height: 1.5;
+    }
+
+    .status-box.success {
+      background: var(--success-bg);
+      border-color: var(--success-border);
+    }
+
+    .status-box.error {
+      background: var(--error-bg);
+      border-color: var(--error-border);
+    }
+
+    .status-box.warning {
+      background: var(--warning-bg);
+      border-color: var(--warning-border);
+    }
+
+    .mode-switch {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .mode-btn {
+      border-radius: 18px;
+      min-height: 56px;
+      padding: 12px 10px;
+      font-size: 0.98rem;
+      font-weight: 850;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,0.03);
+      color: var(--text);
+      box-shadow: var(--shadow-soft);
+    }
+
+    .mode-btn.active {
+      border: 0;
+      background: linear-gradient(180deg, var(--primary-2), var(--primary));
+      color: white;
+      box-shadow: 0 12px 28px rgba(87, 126, 255, 0.25);
+    }
+
+    .field-title {
+      margin: 0 0 10px;
+      font-size: 1rem;
+      font-weight: 850;
+      color: var(--text);
+    }
+
+    .upload-box input[type="file"] {
+      width: 100%;
+      color: var(--text);
+      font-size: 0.96rem;
+      border-radius: 14px;
+    }
+
+    .file-name {
+      margin-top: 8px;
+      font-size: 0.94rem;
+      color: var(--muted);
+      word-break: break-word;
+    }
+
+    .file-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 10px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: var(--primary-soft);
+      border: 1px solid rgba(138,168,255,0.24);
+      color: var(--text);
+      font-size: 0.9rem;
+      font-weight: 750;
+    }
+
+    audio {
+      width: 100%;
+      margin-top: 12px;
+      display: none;
+      border-radius: 14px;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    .textarea,
+    .input,
+    .select,
+    .input-area {
+      width: 100%;
+      color: var(--text);
+      background: var(--surface-3);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 14px 15px;
+      font-size: 1rem;
+      line-height: 1.4;
+      outline: none;
+      transition: border-color 0.16s ease, box-shadow 0.16s ease;
+    }
+
+    .textarea:focus,
+    .input:focus,
+    .select:focus,
+    .input-area:focus {
+      border-color: rgba(138,168,255,0.38);
+      box-shadow: 0 0 0 4px rgba(138,168,255,0.08);
+    }
+
+    .textarea {
+      min-height: 108px;
+      resize: vertical;
+    }
+
+    .input-area {
+      min-height: 96px;
+      resize: vertical;
+    }
+
+    .actions,
+    .auth-actions,
+    .copy-actions,
+    .result-actions,
+    .pack-actions,
+    .admin-actions {
+      display: grid;
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .btn {
+      width: 100%;
+      min-height: 56px;
+      border-radius: 18px;
+      padding: 14px 16px;
+      font-size: 1rem;
+      font-weight: 850;
+      border: 1px solid var(--border);
+      color: var(--text);
+      background: rgba(255,255,255,0.03);
+      box-shadow: var(--shadow-soft);
+    }
+
+    .btn.primary {
+      border: 0;
+      color: #fff;
+      background: linear-gradient(180deg, var(--primary-2), var(--primary));
+      box-shadow: 0 14px 30px rgba(87, 126, 255, 0.28);
+    }
+
+    .btn.gold {
+      border: 1px solid rgba(255,214,119,0.22);
+      background: linear-gradient(180deg, rgba(255, 225, 145, 0.15), rgba(255,214,119,0.07));
+      color: var(--text);
+      box-shadow: 0 12px 24px rgba(124, 88, 11, 0.12);
+    }
+
+    .btn.small {
+      min-height: 48px;
+      width: auto;
+      padding: 12px 14px;
+      border-radius: 15px;
+      font-size: 0.95rem;
+    }
+
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .metric {
+      min-height: 88px;
+      padding: 12px;
+      display: grid;
+      align-content: start;
+      gap: 6px;
+    }
+
+    .metric-title {
+      color: var(--muted-2);
+      font-size: 0.86rem;
+      font-weight: 700;
+    }
+
+    .metric-value {
+      font-size: 1rem;
+      font-weight: 900;
+      line-height: 1.22;
+      word-break: break-word;
+    }
+
+    .mini-note,
+    .pack-note,
+    .soon-note,
+    .payment-line,
+    .copy-feedback,
+    .auth-feedback,
+    .admin-feedback {
+      color: var(--muted);
+      font-size: 0.93rem;
+      line-height: 1.5;
+    }
+
+    .progress-wrap {
+      display: none;
+      margin-top: 14px;
+    }
+
+    .progress-wrap.show {
+      display: block;
+    }
+
+    .progress-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 10px;
+      font-size: 0.95rem;
+      color: var(--muted);
+      font-weight: 750;
+    }
+
+    .progress-track {
+      height: 16px;
+      border-radius: 999px;
+      overflow: hidden;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid var(--border);
+    }
+
+    .progress-bar {
+      height: 100%;
+      width: 0%;
+      border-radius: 999px;
+      background: linear-gradient(90deg, var(--primary), var(--primary-2));
+      transition: width 0.3s ease;
+    }
+
+    .prelike {
+      white-space: pre-wrap;
+      word-break: break-word;
+      font-size: 0.96rem;
+      line-height: 1.52;
+    }
+
+    .summary-ai {
+      margin-top: 14px;
+      padding: 14px;
+      border-radius: 18px;
+      background: var(--surface-3);
+      border: 1px solid var(--border);
+      font-size: 0.96rem;
+      line-height: 1.5;
+    }
+
+    .collapse-toggle {
+      width: 100%;
+      min-height: 56px;
+      border-radius: 18px;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,0.03);
+      color: var(--text);
+      padding: 14px 16px;
+      font-size: 1rem;
+      font-weight: 850;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      text-align: left;
+      box-shadow: var(--shadow-soft);
+    }
+
+    .collapse-content {
+      margin-top: 12px;
+    }
+
+    .detail-tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .tab-btn {
+      border-radius: 14px;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,0.03);
+      color: var(--text);
+      padding: 10px 12px;
+      font-size: 0.9rem;
+      font-weight: 800;
+      min-height: 42px;
+    }
+
+    .tab-btn.active {
+      border: 0;
+      background: linear-gradient(180deg, var(--primary-2), var(--primary));
+      color: white;
+    }
+
+    .tab-panel {
+      display: none;
+    }
+
+    .tab-panel.active {
+      display: block;
+    }
+
+    .result-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 10px;
+    }
+
+    .result-badge,
+    .badge-premium {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      min-height: 38px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      font-size: 0.88rem;
+      font-weight: 850;
+      color: var(--text);
+      border: 1px solid var(--border);
+      background: var(--primary-soft);
+    }
+
+    .badge-premium {
+      margin-bottom: 12px;
+      background: linear-gradient(180deg, rgba(255,214,119,0.1), rgba(255,214,119,0.06));
+      border-color: rgba(255,214,119,0.22);
+    }
+
+    .result-player {
+      display: none;
+      margin-top: 12px;
+    }
+
+    .result-player.show {
+      display: block;
+    }
+
+    .price-grid {
+      gap: 12px;
+    }
+
+    .price-card {
+      padding: 15px;
+      position: relative;
+      overflow: hidden;
+      background:
+        linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)),
+        var(--surface-3);
+    }
+
+    .price-card::after {
+      content: "";
+      position: absolute;
+      inset: 0 auto auto 0;
+      width: 100%;
+      height: 2px;
+      background: linear-gradient(90deg, rgba(255,255,255,0), rgba(138,168,255,0.9), rgba(255,255,255,0));
+      opacity: 0.35;
+    }
+
+    .price-card.highlight {
+      border-color: rgba(255, 214, 119, 0.28);
+      box-shadow:
+        0 0 0 1px rgba(255,214,119,0.06),
+        0 22px 48px rgba(0, 0, 0, 0.24);
+    }
+
+    .price-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    .price-name {
+      font-size: 1.02rem;
+      font-weight: 900;
+    }
+
+    .price-tag {
+      min-height: 32px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      color: var(--muted);
+      background: rgba(255,255,255,0.03);
+      font-size: 0.82rem;
+      font-weight: 750;
+      display: inline-flex;
+      align-items: center;
+      white-space: nowrap;
+    }
+
+    .price-value {
+      font-size: 2rem;
+      line-height: 1;
+      font-weight: 950;
+      letter-spacing: -0.045em;
+      margin-bottom: 8px;
+    }
+
+    .price-sub {
+      color: var(--muted);
+      font-size: 0.95rem;
+      line-height: 1.48;
+      margin-bottom: 10px;
+    }
+
+    .price-list {
+      display: grid;
+      gap: 8px;
+      margin-bottom: 2px;
+    }
+
+    .price-line {
+      display: flex;
+      gap: 8px;
+      align-items: flex-start;
+      color: var(--text);
+      font-size: 0.94rem;
+      line-height: 1.45;
+    }
+
+    .price-line::before {
+      content: "•";
+      color: var(--gold);
+      font-size: 1rem;
+      font-weight: 900;
+      line-height: 1.2;
+      margin-top: 1px;
+    }
+
+    .admin-grid,
+    .auth-grid {
+      margin-top: 12px;
+    }
+
+    .admin-list,
+    .client-list {
+      display: grid;
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .admin-item-top,
+    .client-item-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      font-weight: 850;
+      margin-bottom: 7px;
+    }
+
+    .admin-item-sub,
+    .client-item-sub {
+      color: var(--muted);
+      font-size: 0.93rem;
+      line-height: 1.48;
+    }
+
+    .admin-form-grid,
+    .auth-form-grid {
+      display: grid;
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .admin-report-box {
+      margin-top: 12px;
+      padding: 14px;
+      border-radius: 18px;
+      background: var(--surface-3);
+      border: 1px solid var(--border);
+    }
+
+    .section-label {
+      margin: 4px 0 8px;
+      font-size: 0.8rem;
+      font-weight: 900;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted-2);
+    }
+
+    .empty-state {
+      color: var(--muted);
+      font-size: 0.94rem;
+      line-height: 1.45;
+    }
+
+    @media (min-width: 720px) {
+      body {
+        padding: 22px;
+      }
+
+      .hero {
+        padding: 22px;
+      }
+
+      .hero-head {
+        grid-template-columns: 1.15fr 0.85fr;
+      }
+
+      .hero-actions {
+        align-content: start;
+      }
+
+      .hero-grid {
+        grid-template-columns: 1.1fr 0.9fr;
+        align-items: stretch;
+      }
+
+      .grid-2 {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .grid-3 {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+
+      .feature-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+
+      .price-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+
+      .summary-grid {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+      }
+
+      .actions {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .auth-actions,
+      .copy-actions,
+      .result-actions,
+      .pack-actions,
+      .admin-actions {
+        display: flex;
+        flex-wrap: wrap;
+      }
+
+      .admin-grid,
+      .auth-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .admin-form-grid,
+      .auth-form-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <section class="hero">
+      <div class="hero-head">
+        <div class="hero-brand">
+          <div class="eyebrow">AI Audio Suite</div>
+          <h1 class="hero-title">Mastering<br />IA</h1>
+          <p class="hero-sub">
+            Améliore ton son, génère un rendu final plus propre, plus puissant et prêt à l’écoute.
+          </p>
+          <div class="chip-row">
+            <span class="chip">Mobile</span>
+            <span class="chip">Voix + instru</span>
+            <span class="chip">Final master</span>
+          </div>
+        </div>
+
+        <div class="hero-actions">
+          <button id="themeBtn" class="theme-btn" type="button">Mode clair</button>
+          <button id="clientToggleBtn" class="top-open-btn" type="button">Client</button>
+          <button id="adminToggleBtn" class="top-open-btn" type="button">Admin</button>
+        </div>
+      </div>
+
+      <div class="hero-bottom">
+        <div class="hero-grid">
+          <div class="hero-mini-grid">
+            <div class="mini-stat">
+              <div class="mini-stat-label">Rendu</div>
+              <div class="mini-stat-value">Son plus net, mieux équilibré et plus prêt pour une diffusion propre.</div>
+            </div>
+            <div class="mini-stat">
+              <div class="mini-stat-label">Méthode</div>
+              <div class="mini-stat-value">Le mode voix + instrumental donne le meilleur résultat quand tu veux aller loin.</div>
+            </div>
+            <div class="mini-stat">
+              <div class="mini-stat-label">Coût</div>
+              <div class="mini-stat-value">1 rendu final = 1 génération débitée depuis ton compte client.</div>
+            </div>
+            <div class="mini-stat">
+              <div class="mini-stat-label">Export</div>
+              <div class="mini-stat-value">Téléchargement WAV direct une fois le rendu final généré.</div>
+            </div>
+          </div>
+
+          <div class="art-card" aria-hidden="true">
+            <svg class="studio-svg" viewBox="0 0 720 280" xmlns="http://www.w3.org/2000/svg">
+              <defs>
+                <linearGradient id="micGlow" x1="0" y1="0" x2="1" y2="1">
+                  <stop offset="0%" stop-color="#dbe6ff"/>
+                  <stop offset="55%" stop-color="#8caaff"/>
+                  <stop offset="100%" stop-color="#5b83ff"/>
+                </linearGradient>
+                <linearGradient id="deskGlow" x1="0" y1="0" x2="1" y2="0">
+                  <stop offset="0%" stop-color="#3357d5" stop-opacity="0"/>
+                  <stop offset="50%" stop-color="#91b0ff" stop-opacity="0.8"/>
+                  <stop offset="100%" stop-color="#3357d5" stop-opacity="0"/>
+                </linearGradient>
+                <filter id="soft">
+                  <feGaussianBlur stdDeviation="8" result="b"/>
+                  <feMerge>
+                    <feMergeNode in="b"/>
+                    <feMergeNode in="SourceGraphic"/>
+                  </feMerge>
+                </filter>
+              </defs>
+
+              <ellipse cx="350" cy="238" rx="220" ry="18" fill="url(#deskGlow)" filter="url(#soft)"/>
+              <rect x="100" y="170" width="520" height="16" rx="8" fill="rgba(255,255,255,0.12)"/>
+              <rect x="134" y="92" width="76" height="118" rx="26" fill="url(#micGlow)" stroke="rgba(255,255,255,0.2)" stroke-width="3"/>
+              <rect x="154" y="75" width="36" height="36" rx="12" fill="url(#micGlow)"/>
+              <rect x="166" y="188" width="12" height="48" rx="6" fill="rgba(255,255,255,0.28)"/>
+              <rect x="278" y="98" width="178" height="94" rx="18" fill="rgba(255,255,255,0.08)" stroke="rgba(255,255,255,0.16)" stroke-width="2"/>
+              <rect x="300" y="120" width="132" height="12" rx="6" fill="rgba(125,162,255,0.65)"/>
+              <rect x="300" y="144" width="100" height="10" rx="5" fill="rgba(255,255,255,0.22)"/>
+              <rect x="300" y="162" width="74" height="10" rx="5" fill="rgba(255,255,255,0.16)"/>
+              <rect x="500" y="118" width="76" height="64" rx="16" fill="rgba(255,255,255,0.08)" stroke="rgba(255,255,255,0.16)" stroke-width="2"/>
+              <circle cx="538" cy="150" r="18" fill="url(#micGlow)"/>
+              <path d="M528 146 L536 154 L548 140" fill="none" stroke="#0b1730" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="clientSection" class="card hidden">
+      <div class="result-head">
+        <div>
+          <h2 class="section-title" style="margin-bottom:4px;">Espace client</h2>
+          <div class="subtle-title">Connexion, solde, recharges et accès au rendu final.</div>
+        </div>
+        <div id="clientBadge" class="result-badge">Client déconnecté</div>
+      </div>
+
+      <div id="clientAuthPanel" class="auth-panel">
+        <div class="field-title">Connexion ou inscription</div>
+        <div class="feature-text">
+          Crée ton compte pour lier tes générations à ton email et suivre facilement tes recharges.
+        </div>
+
+        <div class="auth-form-grid">
+          <input id="clientEmailInput" class="input" type="email" placeholder="Email client" />
+          <input id="clientPasswordInput" class="input" type="password" placeholder="Mot de passe" />
+        </div>
+
+        <div class="auth-actions">
+          <button id="clientRegisterBtn" class="btn small primary" type="button">S'inscrire</button>
+          <button id="clientLoginBtn" class="btn small" type="button">Se connecter</button>
+        </div>
+
+        <div id="clientFeedback" class="auth-feedback"></div>
+      </div>
+
+      <div id="clientWorkspace" class="hidden">
+        <div class="summary-grid" style="margin-top:0;">
+          <div class="metric">
+            <div class="metric-title">Compte</div>
+            <div id="clientEmailValue" class="metric-value">-</div>
+          </div>
+          <div class="metric">
+            <div class="metric-title">Solde</div>
+            <div id="clientGenerationsValue" class="metric-value">0</div>
+          </div>
+          <div class="metric">
+            <div class="metric-title">Analyse audio</div>
+            <div class="metric-value">Disponible</div>
+          </div>
+          <div class="metric">
+            <div class="metric-title">Coût par rendu</div>
+            <div class="metric-value">1 génération</div>
+          </div>
+        </div>
+
+        <div class="client-list">
+          <div class="client-item">
+            <div class="client-item-top">
+              <span>Comment ça marche</span>
+            </div>
+            <div class="client-item-sub">
+              Analyse ton audio, génère ton rendu final, puis recharge ton compte quand ton solde arrive à zéro.
+            </div>
+          </div>
+        </div>
+
+        <div class="auth-actions">
+          <button id="clientRefreshBtn" class="btn small" type="button">Actualiser mon solde</button>
+          <button id="clientLogoutBtn" class="btn small" type="button">Se déconnecter</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="grid-3">
+      <div class="feature-card">
+        <div class="feature-title">1. Analyse audio</div>
+        <div class="feature-text">
+          Lecture LUFS, dynamique, brillance, présence, grave et détection de structure utile au rendu.
+        </div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-title">2. Embellissement</div>
+        <div class="feature-text">
+          L’outil améliore la lisibilité, l’équilibre et la sensation générale avant l’étape finale.
+        </div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-title">3. Rendu final</div>
+        <div class="feature-text">
+          Final master, export WAV et téléchargement immédiat une fois le traitement terminé.
+        </div>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="section-head">
+        <h2 class="section-title">Choisir le mode</h2>
+        <div class="subtle-title">
+          Fichier complet pour aller vite. Voix + instrumental séparés pour le meilleur rendu.
+        </div>
+      </div>
+
+      <div class="mode-switch">
+        <button id="modeFullBtn" class="mode-btn active" type="button">Fichier complet</button>
+        <button id="modeStemsBtn" class="mode-btn" type="button">Voix + instru</button>
+      </div>
+    </section>
+
+    <section class="grid-2">
+      <section class="card" id="fullModeSection">
+        <div class="section-head">
+          <h2 class="section-title">Importer un morceau complet</h2>
+          <div class="subtle-title">Option rapide pour générer un rendu final sans séparer les pistes.</div>
+        </div>
+
+        <div class="upload-box">
+          <div class="field-title">Fichier complet</div>
+          <input id="fullAudioFile" type="file" accept="audio/*" />
+          <div id="fullAudioName" class="file-name">Aucun fichier sélectionné</div>
+          <div id="fullAudioChip" class="file-chip hidden">Fichier chargé</div>
+          <audio id="fullAudioPreview" controls></audio>
+        </div>
+      </section>
+
+      <section class="card hidden" id="stemsModeSection">
+        <div class="section-head">
+          <h2 class="section-title">Importer voix + instrumental</h2>
+          <div class="subtle-title">Option premium pour un contrôle plus précis du rendu final.</div>
+        </div>
+
+        <div class="upload-box" style="margin-bottom:12px;">
+          <div class="field-title">Piste voix</div>
+          <input id="voiceFile" type="file" accept="audio/*" />
+          <div id="voiceFileName" class="file-name">Aucun fichier voix sélectionné</div>
+          <div id="voiceChip" class="file-chip hidden">Voix chargée</div>
+          <audio id="voicePreview" controls></audio>
+        </div>
+
+        <div class="upload-box">
+          <div class="field-title">Piste instrumental</div>
+          <input id="instruFile" type="file" accept="audio/*" />
+          <div id="instruFileName" class="file-name">Aucun fichier instrumental sélectionné</div>
+          <div id="instruChip" class="file-chip hidden">Instrumental chargé</div>
+          <audio id="instruPreview" controls></audio>
+        </div>
+      </section>
+    </section>
+
+    <section class="grid-2">
+      <section class="card">
+        <div class="section-head">
+          <h2 class="section-title">Préparer mon rendu</h2>
+          <div class="subtle-title">Décris le rendu voulu pour guider l’analyse et le plan audio.</div>
+        </div>
+
+        <textarea
+          id="promptInput"
+          class="textarea"
+          placeholder="Décris le rendu voulu..."
+        >Rends ce son parfait. Je veux un rendu propre, puissant, équilibré et professionnel.</textarea>
+
+        <div class="pack-note">
+          Le rendu final applique d’abord l’embellissement, puis le final master avant export du fichier.
+        </div>
+
+        <div class="actions">
+          <button id="analyzeBtn" class="btn primary" type="button">Analyser</button>
+          <button id="masterBtn" class="btn" type="button">Générer le rendu</button>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="section-head">
+          <h2 class="section-title">Statut</h2>
+          <div class="subtle-title">Suivi clair de l’analyse, du traitement et du téléchargement.</div>
+        </div>
+
+        <div id="statusBox" class="status-box">
+          Choisis un mode puis ajoute tes fichiers.
+        </div>
+
+        <div id="progressWrap" class="progress-wrap">
+          <div class="progress-head">
+            <span id="progressLabel">Traitement...</span>
+            <span id="progressPercent">0%</span>
+          </div>
+          <div class="progress-track">
+            <div id="progressBar" class="progress-bar"></div>
+          </div>
+        </div>
+
+        <div class="tip-box" style="margin-top:12px;">
+          <div class="field-title" style="margin-bottom:6px;">Règle simple</div>
+          <div class="feature-text">
+            1 rendu final consomme 1 génération depuis ton solde client.
+          </div>
+        </div>
+      </section>
+    </section>
+
+    <section class="card">
+      <div class="result-head">
+        <div>
+          <h2 class="section-title" style="margin-bottom:4px;">Rendu final</h2>
+          <div class="subtle-title">Le fichier final apparaîtra ici une fois le traitement terminé.</div>
+        </div>
+        <div id="resultBadge" class="result-badge">Aucun fichier final</div>
+      </div>
+
+      <div class="result-panel">
+        <div id="resultText" class="prelike">Le rendu final apparaîtra ici après le traitement.</div>
+
+        <div class="result-actions">
+          <button id="downloadResultBtn" class="btn small primary" type="button" disabled>Télécharger le rendu final</button>
+          <button id="clearResultBtn" class="btn small" type="button">Effacer ce résultat</button>
+        </div>
+
+        <audio id="resultAudioPreview" class="result-player" controls></audio>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="section-head">
+        <h2 class="section-title">Résumé premium</h2>
+        <div class="subtle-title">Vue rapide du mode utilisé, de la qualité visée et du plan généré.</div>
+      </div>
+
+      <div class="summary-box">
+        <div class="summary-grid" id="summaryGrid">
+          <div class="metric">
+            <div class="metric-title">Mode</div>
+            <div class="metric-value">Fichier complet</div>
+          </div>
+          <div class="metric">
+            <div class="metric-title">Qualité</div>
+            <div class="metric-value">Standard</div>
+          </div>
+          <div class="metric">
+            <div class="metric-title">Voix séparée</div>
+            <div class="metric-value">Non</div>
+          </div>
+          <div class="metric">
+            <div class="metric-title">Instrumental séparé</div>
+            <div class="metric-value">Non</div>
+          </div>
+        </div>
+
+        <div id="miniNote" class="mini-note">
+          Le mode voix + instrumental reste la meilleure option pour un rendu plus précis.
+        </div>
+
+        <div id="summaryAiBox" class="summary-ai">
+          Résumé IA : pas encore généré.
+        </div>
+
+        <div class="copy-actions">
+          <button id="copySummaryBtn" class="btn small primary" type="button">Copier le résumé</button>
+          <button id="copyDetailBtn" class="btn small" type="button">Copier le détail</button>
+        </div>
+
+        <div id="copyFeedback" class="copy-feedback"></div>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2 class="section-title">Choisir un pack</h2>
+      <div class="badge-premium">1 rendu final = 1 génération</div>
+
+      <div class="price-grid">
+        <div class="price-card">
+          <div class="price-top">
+            <div class="price-name">Découverte</div>
+            <div class="price-tag">Entrée</div>
+          </div>
+          <div class="price-value">1,49 €</div>
+          <div class="price-sub">
+            Le pack simple pour tester l’application sur quelques morceaux.
+          </div>
+          <div class="price-list">
+            <div class="price-line">3 générations</div>
+            <div class="price-line">Rendu final téléchargeable</div>
+            <div class="price-line">Idéal pour découvrir l’outil</div>
+          </div>
+          <div class="pack-actions">
+            <button
+              class="btn small gold buy-pack-btn"
+              type="button"
+              data-pack-label="Découverte - 3 générations"
+              data-pack-link="https://checkout.revolut.com/pay/006cbbc6-4c6d-4a1d-b144-ecf15893b5f2"
+            >
+              Acheter - 3 générations
+            </button>
+          </div>
+          <div class="payment-line">Paiement sécurisé via Revolut</div>
+        </div>
+
+        <div class="price-card highlight">
+          <div class="price-top">
+            <div class="price-name">Créateur</div>
+            <div class="price-tag">Le plus rentable</div>
+          </div>
+          <div class="price-value">3,99 €</div>
+          <div class="price-sub">
+            Le meilleur choix pour travailler plusieurs titres sans te limiter.
+          </div>
+          <div class="price-list">
+            <div class="price-line">10 générations</div>
+            <div class="price-line">Parfait pour démos et contenus</div>
+            <div class="price-line">Pensé pour artistes sérieux</div>
+          </div>
+          <div class="pack-actions">
+            <button
+              class="btn small primary buy-pack-btn"
+              type="button"
+              data-pack-label="Créateur - 10 générations"
+              data-pack-link="https://checkout.revolut.com/pay/baa247e6-1222-40ce-82d4-2e7ab7f342d9"
+            >
+              Acheter - 10 générations
+            </button>
+          </div>
+          <div class="payment-line">Paiement sécurisé via Revolut</div>
+        </div>
+
+        <div class="price-card">
+          <div class="price-top">
+            <div class="price-name">Studio</div>
+            <div class="price-tag">Gros usage</div>
+          </div>
+          <div class="price-value">7,99 €</div>
+          <div class="price-sub">
+            Le pack volume pour une utilisation régulière avec le meilleur rapport quantité / prix.
+          </div>
+          <div class="price-list">
+            <div class="price-line">25 générations</div>
+            <div class="price-line">Pensé pour projets complets</div>
+            <div class="price-line">Usage intensif plus confortable</div>
+          </div>
+          <div class="pack-actions">
+            <button
+              class="btn small gold buy-pack-btn"
+              type="button"
+              data-pack-label="Studio - 25 générations"
+              data-pack-link="https://checkout.revolut.com/pay/e257b32c-3b50-443d-9e83-faf5fd6f2567"
+            >
+              Acheter - 25 générations
+            </button>
+          </div>
+          <div class="payment-line">Paiement sécurisé via Revolut</div>
+        </div>
+      </div>
+
+      <div class="soon-note">
+        Après paiement, recharge ton compte côté client puis utilise le même email dans l’application.
+      </div>
+    </section>
+
+    <section id="adminSection" class="card hidden">
+      <div class="result-head">
+        <div>
+          <h2 class="section-title" style="margin-bottom:4px;">Espace admin</h2>
+          <div class="subtle-title">Pilotage, ventes, dépenses, clients et rapport comptable.</div>
+        </div>
+        <div id="adminBadge" class="result-badge">Admin déconnecté</div>
+      </div>
+
+      <div id="adminLoginPanel" class="auth-panel">
+        <div class="field-title">Connexion administrateur</div>
+        <div class="feature-text">
+          Accès privé réservé à la gestion interne de l’application.
+        </div>
+
+        <div class="auth-form-grid">
+          <input id="adminEmailInput" class="input" type="email" placeholder="Email admin" />
+          <input id="adminPasswordInput" class="input" type="password" placeholder="Mot de passe admin" />
+        </div>
+
+        <div class="auth-actions">
+          <button id="adminLoginBtn" class="btn small primary" type="button">Se connecter</button>
+        </div>
+
+        <div id="adminFeedback" class="auth-feedback"></div>
+      </div>
+
+      <div id="adminWorkspace" class="hidden">
+        <div class="admin-actions" style="margin-top:0;">
+          <button id="adminRefreshBtn" class="btn small" type="button">Actualiser</button>
+          <button id="adminLogoutBtn" class="btn small" type="button">Se déconnecter</button>
+        </div>
+
+        <div class="section-label">Pilotage</div>
+        <div class="summary-grid" style="margin-top:0;">
+          <div class="metric">
+            <div class="metric-title">Période</div>
+            <div id="adminQuarterLabel" class="metric-value">-</div>
+          </div>
+          <div class="metric">
+            <div class="metric-title">CA à déclarer</div>
+            <div id="adminDeclarationTotal" class="metric-value">-</div>
+          </div>
+          <div class="metric">
+            <div class="metric-title">Dépenses internes</div>
+            <div id="adminExpensesTotal" class="metric-value">-</div>
+          </div>
+          <div class="metric">
+            <div class="metric-title">Marge interne</div>
+            <div id="adminNetTotal" class="metric-value">-</div>
+          </div>
+        </div>
+
+        <div class="section-label">Actions rapides</div>
+        <div class="admin-grid">
+          <div class="admin-panel">
+            <div class="field-title">Ajouter une vente</div>
+
+            <div class="admin-form-grid">
+              <input id="saleDateInput" class="input" type="date" />
+              <input id="saleCustomerInput" class="input" type="text" placeholder="Client ou pseudo" />
+              <select id="salePackInput" class="select">
+                <option value="Découverte - 3 générations">Découverte - 3 générations</option>
+                <option value="Créateur - 10 générations">Créateur - 10 générations</option>
+                <option value="Studio - 25 générations">Studio - 25 générations</option>
+              </select>
+              <input id="saleAmountInput" class="input" type="number" step="0.01" placeholder="Montant en €" />
+              <input id="saleGenerationsInput" class="input" type="number" step="1" placeholder="Générations ajoutées" />
+              <input id="salePaymentInput" class="input" type="text" placeholder="Paiement" value="Revolut" />
+            </div>
+
+            <textarea id="saleNoteInput" class="input-area" placeholder="Note vente"></textarea>
+
+            <div class="admin-actions">
+              <button id="saveSaleBtn" class="btn small primary" type="button">Enregistrer la vente</button>
+            </div>
+          </div>
+
+          <div class="admin-panel">
+            <div class="field-title">Ajouter une dépense</div>
+
+            <div class="admin-form-grid">
+              <input id="expenseDateInput" class="input" type="date" />
+              <input id="expenseCategoryInput" class="input" type="text" placeholder="Catégorie" value="OpenAI" />
+              <input id="expenseAmountInput" class="input" type="number" step="0.01" placeholder="Montant en €" />
+              <input id="expenseVendorInput" class="input" type="text" placeholder="Fournisseur" />
+            </div>
+
+            <textarea id="expenseNoteInput" class="input-area" placeholder="Note dépense"></textarea>
+
+            <div class="admin-actions">
+              <button id="saveExpenseBtn" class="btn small primary" type="button">Enregistrer la dépense</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="admin-grid">
+          <div class="admin-panel">
+            <div class="field-title">Ajouter des générations à un client</div>
+
+            <div class="admin-form-grid">
+              <input id="grantEmailInput" class="input" type="email" placeholder="Email client" />
+              <input id="grantAmountInput" class="input" type="number" step="1" placeholder="Nombre de générations" />
+            </div>
+
+            <textarea id="grantNoteInput" class="input-area" placeholder="Note admin"></textarea>
+
+            <div class="admin-actions">
+              <button id="grantGenerationsBtn" class="btn small primary" type="button">Ajouter les générations</button>
+            </div>
+          </div>
+
+          <div class="admin-panel">
+            <div class="field-title">Rapport URSSAF</div>
+
+            <div class="admin-form-grid">
+              <select id="reportQuarterInput" class="select">
+                <option value="1">Trimestre 1</option>
+                <option value="2">Trimestre 2</option>
+                <option value="3">Trimestre 3</option>
+                <option value="4">Trimestre 4</option>
+              </select>
+              <input id="reportYearInput" class="input" type="number" step="1" placeholder="Année" />
+            </div>
+
+            <div class="admin-actions">
+              <button id="viewOtherQuarterBtn" class="btn small" type="button">Voir ce trimestre</button>
+              <button id="copyReportBtn" class="btn small primary" type="button">Copier le rapport</button>
+            </div>
+
+            <div id="adminReportText" class="admin-report-box prelike">Aucun rapport généré pour le moment.</div>
+          </div>
+        </div>
+
+        <div class="section-label">Suivi</div>
+        <div class="admin-grid">
+          <div class="admin-panel">
+            <div class="field-title">Clients</div>
+            <div id="adminUsersList" class="admin-list">
+              <div class="admin-item">
+                <div class="admin-item-sub">Aucun client pour le moment.</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="admin-panel">
+            <div class="field-title">Dernières ventes</div>
+            <div id="adminSalesList" class="admin-list">
+              <div class="admin-item">
+                <div class="admin-item-sub">Aucune vente enregistrée.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="admin-grid">
+          <div class="admin-panel">
+            <div class="field-title">Dernières dépenses</div>
+            <div id="adminExpensesList" class="admin-list">
+              <div class="admin-item">
+                <div class="admin-item-sub">Aucune dépense enregistrée.</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="admin-panel">
+            <div class="field-title">Revenus mensuels du trimestre</div>
+            <div id="adminMonthlyList" class="admin-list">
+              <div class="admin-item">
+                <div class="admin-item-sub">Aucune donnée pour le moment.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div id="adminActionFeedback" class="admin-feedback"></div>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2 class="section-title">Détail complet</h2>
+
+      <button id="toggleDetailBtn" class="collapse-toggle" type="button">
+        <span id="toggleDetailLabel">Afficher le détail complet</span>
+        <span id="toggleDetailIcon">+</span>
+      </button>
+
+      <div id="detailContent" class="collapse-content hidden">
+        <div class="detail-tabs">
+          <button class="tab-btn active" data-tab="tabSummary" type="button">Résumé</button>
+          <button class="tab-btn" data-tab="tabVoice" type="button">Analyse voix</button>
+          <button class="tab-btn" data-tab="tabInstru" type="button">Analyse instru</button>
+          <button class="tab-btn" data-tab="tabPlan" type="button">Plan IA</button>
+        </div>
+
+        <div id="tabSummary" class="tab-panel active">
+          <div id="tabSummaryContent" class="prelike">Aucun résumé détaillé pour le moment.</div>
+        </div>
+
+        <div id="tabVoice" class="tab-panel">
+          <div id="tabVoiceContent" class="prelike">Aucune analyse voix pour le moment.</div>
+        </div>
+
+        <div id="tabInstru" class="tab-panel">
+          <div id="tabInstruContent" class="prelike">Aucune analyse instrumental pour le moment.</div>
+        </div>
+
+        <div id="tabPlan" class="tab-panel">
+          <div id="tabPlanContent" class="prelike">Aucun plan IA pour le moment.</div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    const BACKEND_URL = "https://mastering-ia-app.onrender.com";
+
+    const REVOLUT_LINKS = {
+      starter: "https://checkout.revolut.com/pay/006cbbc6-4c6d-4a1d-b144-ecf15893b5f2",
+      creator: "https://checkout.revolut.com/pay/baa247e6-1222-40ce-82d4-2e7ab7f342d9",
+      studio: "https://checkout.revolut.com/pay/e257b32c-3b50-443d-9e83-faf5fd6f2567"
+    };
+
+    const ADMIN_TOKEN_KEY = "mastering-admin-token";
+    const ADMIN_EMAIL_KEY = "mastering-admin-email";
+    const CLIENT_TOKEN_KEY = "mastering-client-token";
+    const CLIENT_EMAIL_KEY = "mastering-client-email";
+
+    const body = document.body;
+    const themeBtn = document.getElementById("themeBtn");
+    const clientToggleBtn = document.getElementById("clientToggleBtn");
+    const adminToggleBtn = document.getElementById("adminToggleBtn");
+
+    const modeFullBtn = document.getElementById("modeFullBtn");
+    const modeStemsBtn = document.getElementById("modeStemsBtn");
+    const fullModeSection = document.getElementById("fullModeSection");
+    const stemsModeSection = document.getElementById("stemsModeSection");
+
+    const fullAudioFile = document.getElementById("fullAudioFile");
+    const fullAudioName = document.getElementById("fullAudioName");
+    const fullAudioPreview = document.getElementById("fullAudioPreview");
+    const fullAudioChip = document.getElementById("fullAudioChip");
+
+    const voiceFile = document.getElementById("voiceFile");
+    const voiceFileName = document.getElementById("voiceFileName");
+    const voicePreview = document.getElementById("voicePreview");
+    const voiceChip = document.getElementById("voiceChip");
+
+    const instruFile = document.getElementById("instruFile");
+    const instruFileName = document.getElementById("instruFileName");
+    const instruPreview = document.getElementById("instruPreview");
+    const instruChip = document.getElementById("instruChip");
+
+    const promptInput = document.getElementById("promptInput");
+    const analyzeBtn = document.getElementById("analyzeBtn");
+    const masterBtn = document.getElementById("masterBtn");
+
+    const statusBox = document.getElementById("statusBox");
+    const progressWrap = document.getElementById("progressWrap");
+    const progressBar = document.getElementById("progressBar");
+    const progressLabel = document.getElementById("progressLabel");
+    const progressPercent = document.getElementById("progressPercent");
+
+    const summaryGrid = document.getElementById("summaryGrid");
+    const miniNote = document.getElementById("miniNote");
+    const summaryAiBox = document.getElementById("summaryAiBox");
+    const copySummaryBtn = document.getElementById("copySummaryBtn");
+    const copyDetailBtn = document.getElementById("copyDetailBtn");
+    const copyFeedback = document.getElementById("copyFeedback");
+
+    const toggleDetailBtn = document.getElementById("toggleDetailBtn");
+    const toggleDetailLabel = document.getElementById("toggleDetailLabel");
+    const toggleDetailIcon = document.getElementById("toggleDetailIcon");
+    const detailContent = document.getElementById("detailContent");
+
+    const tabSummaryContent = document.getElementById("tabSummaryContent");
+    const tabVoiceContent = document.getElementById("tabVoiceContent");
+    const tabInstruContent = document.getElementById("tabInstruContent");
+    const tabPlanContent = document.getElementById("tabPlanContent");
+    const tabButtons = Array.from(document.querySelectorAll(".tab-btn"));
+    const tabPanels = Array.from(document.querySelectorAll(".tab-panel"));
+
+    const resultText = document.getElementById("resultText");
+    const resultBadge = document.getElementById("resultBadge");
+    const resultAudioPreview = document.getElementById("resultAudioPreview");
+    const downloadResultBtn = document.getElementById("downloadResultBtn");
+    const clearResultBtn = document.getElementById("clearResultBtn");
+    const buyPackButtons = Array.from(document.querySelectorAll(".buy-pack-btn"));
+
+    const clientSection = document.getElementById("clientSection");
+    const clientBadge = document.getElementById("clientBadge");
+    const clientAuthPanel = document.getElementById("clientAuthPanel");
+    const clientWorkspace = document.getElementById("clientWorkspace");
+    const clientEmailInput = document.getElementById("clientEmailInput");
+    const clientPasswordInput = document.getElementById("clientPasswordInput");
+    const clientRegisterBtn = document.getElementById("clientRegisterBtn");
+    const clientLoginBtn = document.getElementById("clientLoginBtn");
+    const clientLogoutBtn = document.getElementById("clientLogoutBtn");
+    const clientRefreshBtn = document.getElementById("clientRefreshBtn");
+    const clientEmailValue = document.getElementById("clientEmailValue");
+    const clientGenerationsValue = document.getElementById("clientGenerationsValue");
+    const clientFeedback = document.getElementById("clientFeedback");
+
+    const adminSection = document.getElementById("adminSection");
+    const adminBadge = document.getElementById("adminBadge");
+    const adminLoginPanel = document.getElementById("adminLoginPanel");
+    const adminWorkspace = document.getElementById("adminWorkspace");
+    const adminEmailInput = document.getElementById("adminEmailInput");
+    const adminPasswordInput = document.getElementById("adminPasswordInput");
+    const adminLoginBtn = document.getElementById("adminLoginBtn");
+    const adminLogoutBtn = document.getElementById("adminLogoutBtn");
+    const adminRefreshBtn = document.getElementById("adminRefreshBtn");
+    const adminFeedback = document.getElementById("adminFeedback");
+    const adminActionFeedback = document.getElementById("adminActionFeedback");
+
+    const adminQuarterLabel = document.getElementById("adminQuarterLabel");
+    const adminDeclarationTotal = document.getElementById("adminDeclarationTotal");
+    const adminExpensesTotal = document.getElementById("adminExpensesTotal");
+    const adminNetTotal = document.getElementById("adminNetTotal");
+    const adminMonthlyList = document.getElementById("adminMonthlyList");
+    const adminSalesList = document.getElementById("adminSalesList");
+    const adminExpensesList = document.getElementById("adminExpensesList");
+    const adminUsersList = document.getElementById("adminUsersList");
+
+    const saleDateInput = document.getElementById("saleDateInput");
+    const saleCustomerInput = document.getElementById("saleCustomerInput");
+    const salePackInput = document.getElementById("salePackInput");
+    const saleAmountInput = document.getElementById("saleAmountInput");
+    const saleGenerationsInput = document.getElementById("saleGenerationsInput");
+    const salePaymentInput = document.getElementById("salePaymentInput");
+    const saleNoteInput = document.getElementById("saleNoteInput");
+    const saveSaleBtn = document.getElementById("saveSaleBtn");
+
+    const expenseDateInput = document.getElementById("expenseDateInput");
+    const expenseCategoryInput = document.getElementById("expenseCategoryInput");
+    const expenseAmountInput = document.getElementById("expenseAmountInput");
+    const expenseVendorInput = document.getElementById("expenseVendorInput");
+    const expenseNoteInput = document.getElementById("expenseNoteInput");
+    const saveExpenseBtn = document.getElementById("saveExpenseBtn");
+
+    const grantEmailInput = document.getElementById("grantEmailInput");
+    const grantAmountInput = document.getElementById("grantAmountInput");
+    const grantNoteInput = document.getElementById("grantNoteInput");
+    const grantGenerationsBtn = document.getElementById("grantGenerationsBtn");
+
+    const reportQuarterInput = document.getElementById("reportQuarterInput");
+    const reportYearInput = document.getElementById("reportYearInput");
+    const viewOtherQuarterBtn = document.getElementById("viewOtherQuarterBtn");
+    const copyReportBtn = document.getElementById("copyReportBtn");
+    const adminReportText = document.getElementById("adminReportText");
+
+    let currentMode = "full";
+    let fullAudioUrl = null;
+    let voiceAudioUrl = null;
+    let instruAudioUrl = null;
+    let lastResultBlobUrl = null;
+    let lastResultFileName = "stems_master_final.wav";
+
+    let lastFullAnalysis = null;
+    let lastVoiceAnalysis = null;
+    let lastInstruAnalysis = null;
+    let lastStemPlan = null;
+    let lastSummaryText = "Résumé non disponible.";
+    let lastDetailText = "Détail non disponible.";
+    let lastAdminReport = "Aucun rapport généré pour le moment.";
+
+    let adminToken = localStorage.getItem(ADMIN_TOKEN_KEY) || "";
+    let adminEmail = localStorage.getItem(ADMIN_EMAIL_KEY) || "";
+    let clientToken = localStorage.getItem(CLIENT_TOKEN_KEY) || "";
+    let clientEmail = localStorage.getItem(CLIENT_EMAIL_KEY) || "";
+    let currentClientProfile = null;
+
+    const eurFormatter = new Intl.NumberFormat("fr-FR", {
+      style: "currency",
+      currency: "EUR"
+    });
+
+    function money(value) {
+      return eurFormatter.format(Number(value || 0));
+    }
+
+    function todayDateString() {
+      const now = new Date();
+      const year = now.getFullYear();
+      const month = String(now.getMonth() + 1).padStart(2, "0");
+      const day = String(now.getDate()).padStart(2, "0");
+      return `${year}-${month}-${day}`;
+    }
+
+    function currentQuarterYear() {
+      const now = new Date();
+      return {
+        quarter: Math.floor(now.getMonth() / 3) + 1,
+        year: now.getFullYear()
+      };
+    }
+
+    function setStatus(text, type = "") {
+      statusBox.textContent = text;
+      statusBox.className = "status-box";
+      if (type) statusBox.classList.add(type);
+    }
+
+    function setProgress(percent, label = "Traitement...") {
+      const safePercent = Math.max(0, Math.min(100, Number(percent) || 0));
+      progressWrap.classList.add("show");
+      progressBar.style.width = `${safePercent}%`;
+      progressPercent.textContent = `${Math.round(safePercent)}%`;
+      progressLabel.textContent = label;
+    }
+
+    function resetProgress() {
+      progressWrap.classList.remove("show");
+      progressBar.style.width = "0%";
+      progressPercent.textContent = "0%";
+      progressLabel.textContent = "Traitement...";
+    }
+
+    async function copyText(value, successMessage, target = copyFeedback) {
+      try {
+        await navigator.clipboard.writeText(value);
+        target.textContent = successMessage;
+      } catch {
+        target.textContent = "Copie impossible sur ce navigateur.";
+      }
+    }
+
+    function toggleTheme() {
+      body.classList.toggle("light");
+      themeBtn.textContent = body.classList.contains("light")
+        ? "Mode sombre"
+        : "Mode clair";
+      localStorage.setItem(
+        "mastering-theme",
+        body.classList.contains("light") ? "light" : "dark"
+      );
+    }
+
+    function showTab(tabId) {
+      tabButtons.forEach((btn) => {
+        btn.classList.toggle("active", btn.dataset.tab === tabId);
+      });
+      tabPanels.forEach((panel) => {
+        panel.classList.toggle("active", panel.id === tabId);
+      });
+    }
+
+    function updateDetailTabs(voiceText, instruText, planText, summaryText) {
+      tabSummaryContent.textContent = summaryText || "Aucun résumé détaillé pour le moment.";
+      tabVoiceContent.textContent = voiceText || "Aucune analyse voix pour le moment.";
+      tabInstruContent.textContent = instruText || "Aucune analyse instrumental pour le moment.";
+      tabPlanContent.textContent = planText || "Aucun plan IA pour le moment.";
+    }
+
+    function setResultState({ ready = false, text = "", fileName = "stems_master_final.wav", blobUrl = null } = {}) {
+      resultText.textContent = text || "Le rendu final apparaîtra ici après le traitement.";
+      resultBadge.textContent = ready ? "Rendu prêt" : "Aucun fichier final";
+      downloadResultBtn.disabled = !ready;
+      lastResultFileName = fileName;
+
+      if (lastResultBlobUrl && lastResultBlobUrl !== blobUrl) {
+        URL.revokeObjectURL(lastResultBlobUrl);
+      }
+      lastResultBlobUrl = blobUrl;
+
+      if (blobUrl) {
+        resultAudioPreview.src = blobUrl;
+        resultAudioPreview.classList.add("show");
+      } else {
+        resultAudioPreview.removeAttribute("src");
+        resultAudioPreview.classList.remove("show");
+      }
+    }
+
+    function clearResultState() {
+      setResultState({
+        ready: false,
+        text: "Le rendu final apparaîtra ici après le traitement.",
+        fileName: "stems_master_final.wav",
+        blobUrl: null
+      });
+    }
+
+    function updateSummaryDefault() {
+      if (currentMode === "full") {
+        summaryGrid.innerHTML = `
+          <div class="metric">
+            <div class="metric-title">Mode</div>
+            <div class="metric-value">Fichier complet</div>
+          </div>
+          <div class="metric">
+            <div class="metric-title">Qualité</div>
+            <div class="metric-value">Standard</div>
+          </div>
+          <div class="metric">
+            <div class="metric-title">Voix séparée</div>
+            <div class="metric-value">Non</div>
+          </div>
+          <div class="metric">
+            <div class="metric-title">Instrumental séparé</div>
+            <div class="metric-value">Non</div>
+          </div>
+        `;
+        miniNote.textContent = "Mode rapide. Le rendu sera moins précis que le mode voix + instrumental.";
+      } else {
+        summaryGrid.innerHTML = `
+          <div class="metric">
+            <div class="metric-title">Voix LUFS</div>
+            <div class="metric-value">${lastVoiceAnalysis?.integratedLufs ?? "-"}</div>
+          </div>
+          <div class="metric">
+            <div class="metric-title">Instru LUFS</div>
+            <div class="metric-value">${lastInstruAnalysis?.integratedLufs ?? "-"}</div>
+          </div>
+          <div class="metric">
+            <div class="metric-title">Voix</div>
+            <div class="metric-value">${voiceFile.files[0] ? "Chargée" : "Absente"}</div>
+          </div>
+          <div class="metric">
+            <div class="metric-title">Instrumental</div>
+            <div class="metric-value">${instruFile.files[0] ? "Chargé" : "Absent"}</div>
+          </div>
+        `;
+        miniNote.textContent = "Mode premium recommandé pour un rendu plus précis et plus propre.";
+      }
+    }
+
+    function updateSummaryFromFullAnalysis(analysis) {
+      summaryGrid.innerHTML = `
+        <div class="metric">
+          <div class="metric-title">Durée</div>
+          <div class="metric-value">${analysis.totalDurationSec ?? "-"}</div>
+        </div>
+        <div class="metric">
+          <div class="metric-title">LUFS</div>
+          <div class="metric-value">${analysis.integratedLufs ?? "-"}</div>
+        </div>
+        <div class="metric">
+          <div class="metric-title">Dynamique</div>
+          <div class="metric-value">${analysis.dynamics ?? "-"}</div>
+        </div>
+        <div class="metric">
+          <div class="metric-title">Grave</div>
+          <div class="metric-value">${analysis.lowEnd ?? "-"}</div>
+        </div>
+      `;
+      miniNote.textContent = `Mode standard analysé. Brillance : ${analysis.brightness ?? "-"} | Stéréo : ${analysis.stereoWidth ?? "-"}`;
+    }
+
+    function updateSummaryFromStemAnalyses(voiceAnalysis, instruAnalysis) {
+      summaryGrid.innerHTML = `
+        <div class="metric">
+          <div class="metric-title">Voix LUFS</div>
+          <div class="metric-value">${voiceAnalysis.integratedLufs ?? "-"}</div>
+        </div>
+        <div class="metric">
+          <div class="metric-title">Instru LUFS</div>
+          <div class="metric-value">${instruAnalysis.integratedLufs ?? "-"}</div>
+        </div>
+        <div class="metric">
+          <div class="metric-title">Voix présence</div>
+          <div class="metric-value">${voiceAnalysis.vocalPresence ?? "-"}</div>
+        </div>
+        <div class="metric">
+          <div class="metric-title">Instru dynamique</div>
+          <div class="metric-value">${instruAnalysis.dynamics ?? "-"}</div>
+        </div>
+      `;
+      miniNote.textContent = `Mode premium analysé. Voix grave : ${voiceAnalysis.lowEnd ?? "-"} | Instru grave : ${instruAnalysis.lowEnd ?? "-"}`;
+    }
+
+    function buildStemHumanSummary(voiceAnalysis, instruAnalysis, plan) {
+      return [
+        "Résumé IA",
+        "",
+        `Voix : LUFS ${voiceAnalysis.integratedLufs}, présence ${voiceAnalysis.vocalPresence}, grave ${voiceAnalysis.lowEnd}, brillance ${voiceAnalysis.brightness}.`,
+        `Instrumental : LUFS ${instruAnalysis.integratedLufs}, dynamique ${instruAnalysis.dynamics}, grave ${instruAnalysis.lowEnd}, brillance ${instruAnalysis.brightness}.`,
+        "",
+        `Objectif global : ${plan.finalObjective}`,
+        "",
+        "Plan voix :",
+        `- ${plan.voicePlan.goal}`,
+        `- Intensité : ${plan.voicePlan.intensity}`,
+        `- Présence : ${plan.voicePlan.settings.presence_gain_db} dB`,
+        `- Air : ${plan.voicePlan.settings.air_gain_db} dB`,
+        `- Compression ratio : ${plan.voicePlan.settings.compression_ratio}`,
+        "",
+        "Plan instrumental :",
+        `- ${plan.instrumentalPlan.goal}`,
+        `- Intensité : ${plan.instrumentalPlan.intensity}`,
+        `- Grave : ${plan.instrumentalPlan.settings.low_gain_db} dB`,
+        `- Présence : ${plan.instrumentalPlan.settings.presence_gain_db} dB`,
+        `- Glue ratio : ${plan.instrumentalPlan.settings.glue_ratio}`,
+        "",
+        "Recombinaison :",
+        `- Niveau voix : ${plan.recombinationPlan.voiceLevelDb} dB`,
+        `- Niveau instrumental : ${plan.recombinationPlan.instrumentalLevelDb} dB`,
+        `- Note 1 : ${plan.recombinationPlan.notes?.[0] || "-"}`,
+        `- Note 2 : ${plan.recombinationPlan.notes?.[1] || "-"}`
+      ].join("\n");
+    }
+
+    function switchMode(mode) {
+      currentMode = mode;
+      lastFullAnalysis = null;
+      lastVoiceAnalysis = null;
+      lastInstruAnalysis = null;
+      lastStemPlan = null;
+      lastSummaryText = "Résumé non disponible.";
+      lastDetailText = "Détail non disponible.";
+      resetProgress();
+      copyFeedback.textContent = "";
+      summaryAiBox.textContent = "Résumé IA : pas encore généré.";
+      tabSummaryContent.textContent = "Aucun résumé détaillé pour le moment.";
+      tabVoiceContent.textContent = "Aucune analyse voix pour le moment.";
+      tabInstruContent.textContent = "Aucune analyse instrumental pour le moment.";
+      tabPlanContent.textContent = "Aucun plan IA pour le moment.";
+      clearResultState();
+
+      if (mode === "full") {
+        modeFullBtn.classList.add("active");
+        modeStemsBtn.classList.remove("active");
+        fullModeSection.classList.remove("hidden");
+        stemsModeSection.classList.add("hidden");
+        setStatus("Mode fichier complet activé.", "success");
+      } else {
+        modeStemsBtn.classList.add("active");
+        modeFullBtn.classList.remove("active");
+        stemsModeSection.classList.remove("hidden");
+        fullModeSection.classList.add("hidden");
+        setStatus("Mode voix + instrumental activé. Qualité recommandée.", "success");
+      }
+
+      updateSummaryDefault();
+    }
+
+    function bindAudioInput(inputEl, nameEl, audioEl, chipEl, urlRefName) {
+      inputEl.addEventListener("change", () => {
+        const file = inputEl.files[0];
+
+        if (!file) {
+          nameEl.textContent = "Aucun fichier sélectionné";
+          chipEl.classList.add("hidden");
+          audioEl.style.display = "none";
+          audioEl.removeAttribute("src");
+
+          if (urlRefName === "full" && fullAudioUrl) {
+            URL.revokeObjectURL(fullAudioUrl);
+            fullAudioUrl = null;
+          }
+          if (urlRefName === "voice" && voiceAudioUrl) {
+            URL.revokeObjectURL(voiceAudioUrl);
+            voiceAudioUrl = null;
+          }
+          if (urlRefName === "instru" && instruAudioUrl) {
+            URL.revokeObjectURL(instruAudioUrl);
+            instruAudioUrl = null;
+          }
+
+          updateSummaryDefault();
+          return;
+        }
+
+        nameEl.textContent = file.name;
+        chipEl.classList.remove("hidden");
+
+        const newUrl = URL.createObjectURL(file);
+
+        if (urlRefName === "full") {
+          if (fullAudioUrl) URL.revokeObjectURL(fullAudioUrl);
+          fullAudioUrl = newUrl;
+        }
+        if (urlRefName === "voice") {
+          if (voiceAudioUrl) URL.revokeObjectURL(voiceAudioUrl);
+          voiceAudioUrl = newUrl;
+        }
+        if (urlRefName === "instru") {
+          if (instruAudioUrl) URL.revokeObjectURL(instruAudioUrl);
+          instruAudioUrl = newUrl;
+        }
+
+        audioEl.src = newUrl;
+        audioEl.style.display = "block";
+
+        if (currentMode === "full") {
+          setStatus("Fichier complet chargé.", "success");
+        } else {
+          setStatus("Fichiers voix + instrumental chargés.", "success");
+        }
+
+        updateSummaryDefault();
+      });
+    }
+
+    function openClientSection() {
+      clientSection.classList.remove("hidden");
+      clientSection.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+
+    function closeClientSection() {
+      clientSection.classList.add("hidden");
+    }
+
+    function openAdminSection() {
+      adminSection.classList.remove("hidden");
+      adminSection.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+
+    function closeAdminSection() {
+      adminSection.classList.add("hidden");
+    }
+
+    function setClientFeedback(text = "", isError = false) {
+      clientFeedback.textContent = text;
+      clientFeedback.style.color = isError ? "#ffb1b1" : "var(--muted)";
+    }
+
+    function setAdminFeedback(text = "", isError = false) {
+      adminFeedback.textContent = text;
+      adminFeedback.style.color = isError ? "#ffb1b1" : "var(--muted)";
+    }
+
+    function setAdminActionFeedback(text = "", isError = false) {
+      adminActionFeedback.textContent = text;
+      adminActionFeedback.style.color = isError ? "#ffb1b1" : "var(--muted)";
+    }
+
+    function setClientLoggedInState(isLoggedIn) {
+      clientBadge.textContent = isLoggedIn ? "Client connecté" : "Client déconnecté";
+      clientAuthPanel.classList.toggle("hidden", isLoggedIn);
+      clientWorkspace.classList.toggle("hidden", !isLoggedIn);
+      clientToggleBtn.textContent = isLoggedIn ? "Client ✓" : "Client";
+    }
+
+    function setAdminLoggedInState(isLoggedIn) {
+      adminBadge.textContent = isLoggedIn ? "Admin connecté" : "Admin déconnecté";
+      adminLoginPanel.classList.toggle("hidden", isLoggedIn);
+      adminWorkspace.classList.toggle("hidden", !isLoggedIn);
+      adminToggleBtn.textContent = isLoggedIn ? "Admin ✓" : "Admin";
+    }
+
+    function clearClientAuth(message = "Déconnecté.") {
+      clientToken = "";
+      clientEmail = "";
+      currentClientProfile = null;
+      localStorage.removeItem(CLIENT_TOKEN_KEY);
+      localStorage.removeItem(CLIENT_EMAIL_KEY);
+      setClientLoggedInState(false);
+      clientEmailValue.textContent = "-";
+      clientGenerationsValue.textContent = "0";
+      setClientFeedback(message);
+    }
+
+    function clearAdminAuth(message = "Déconnecté.") {
+      adminToken = "";
+      adminEmail = "";
+      localStorage.removeItem(ADMIN_TOKEN_KEY);
+      localStorage.removeItem(ADMIN_EMAIL_KEY);
+      setAdminLoggedInState(false);
+      setAdminFeedback(message);
+      setAdminActionFeedback("");
+      adminReportText.textContent = "Aucun rapport généré pour le moment.";
+      lastAdminReport = "Aucun rapport généré pour le moment.";
+    }
+
+    async function clientFetch(path, options = {}) {
+      const headers = new Headers(options.headers || {});
+      if (clientToken) {
+        headers.set("Authorization", `Bearer ${clientToken}`);
+      }
+
+      const response = await fetch(`${BACKEND_URL}${path}`, {
+        ...options,
+        headers
+      });
+
+      const rawText = await response.text();
+      let data = null;
+
+      try {
+        data = rawText ? JSON.parse(rawText) : null;
+      } catch {
+        data = null;
+      }
+
+      if (!response.ok) {
+        throw new Error(data?.error || rawText || `Erreur HTTP ${response.status}`);
+      }
+
+      return data;
+    }
+
+    async function adminFetch(path, options = {}) {
+      const headers = new Headers(options.headers || {});
+      if (adminToken) {
+        headers.set("Authorization", `Bearer ${adminToken}`);
+      }
+
+      const response = await fetch(`${BACKEND_URL}${path}`, {
+        ...options,
+        headers
+      });
+
+      const rawText = await response.text();
+      let data = null;
+
+      try {
+        data = rawText ? JSON.parse(rawText) : null;
+      } catch {
+        data = null;
+      }
+
+      if (!response.ok) {
+        throw new Error(data?.error || rawText || `Erreur HTTP ${response.status}`);
+      }
+
+      return data;
+    }
+
+    function applyClientProfile(profile) {
+      currentClientProfile = profile;
+      clientEmailValue.textContent = profile.email || "-";
+      clientGenerationsValue.textContent = String(profile.currentGenerations ?? 0);
+      clientBadge.textContent = "Client connecté";
+    }
+
+    async function loadClientMe() {
+      const data = await clientFetch("/api/client/me");
+      applyClientProfile(data.user);
+      setClientLoggedInState(true);
+      setClientFeedback(`Connecté : ${data.user.email}`);
+    }
+
+    async function registerClient() {
+      try {
+        const email = clientEmailInput.value.trim();
+        const password = clientPasswordInput.value;
+
+        if (!email || !password) {
+          setClientFeedback("Email et mot de passe obligatoires.", true);
+          return;
+        }
+
+        setClientFeedback("Inscription en cours...");
+
+        const response = await fetch(`${BACKEND_URL}/api/client/register`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ email, password })
+        });
+
+        const rawText = await response.text();
+        const data = JSON.parse(rawText);
+
+        if (!response.ok || !data.ok) {
+          throw new Error(data.error || `Erreur HTTP ${response.status}`);
+        }
+
+        clientToken = data.token;
+        clientEmail = data.user.email;
+        localStorage.setItem(CLIENT_TOKEN_KEY, clientToken);
+        localStorage.setItem(CLIENT_EMAIL_KEY, clientEmail);
+        clientPasswordInput.value = "";
+        applyClientProfile(data.user);
+        setClientLoggedInState(true);
+        setClientFeedback(`Compte créé : ${data.user.email}`);
+      } catch (error) {
+        setClientFeedback(`Erreur : ${error.message || "inscription impossible"}`, true);
+      }
+    }
+
+    async function loginClient() {
+      try {
+        const email = clientEmailInput.value.trim();
+        const password = clientPasswordInput.value;
+
+        if (!email || !password) {
+          setClientFeedback("Email et mot de passe obligatoires.", true);
+          return;
+        }
+
+        setClientFeedback("Connexion en cours...");
+
+        const response = await fetch(`${BACKEND_URL}/api/client/login`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ email, password })
+        });
+
+        const rawText = await response.text();
+        const data = JSON.parse(rawText);
+
+        if (!response.ok || !data.ok) {
+          throw new Error(data.error || `Erreur HTTP ${response.status}`);
+        }
+
+        clientToken = data.token;
+        clientEmail = data.user.email;
+        localStorage.setItem(CLIENT_TOKEN_KEY, clientToken);
+        localStorage.setItem(CLIENT_EMAIL_KEY, clientEmail);
+        clientPasswordInput.value = "";
+        applyClientProfile(data.user);
+        setClientLoggedInState(true);
+        setClientFeedback(`Connecté : ${data.user.email}`);
+      } catch (error) {
+        setClientFeedback(`Erreur : ${error.message || "connexion impossible"}`, true);
+      }
+    }
+
+    function renderMonthlySales(items = []) {
+      if (!items.length) {
+        adminMonthlyList.innerHTML = `
+          <div class="admin-item">
+            <div class="admin-item-sub">Aucune donnée pour le moment.</div>
+          </div>
+        `;
+        return;
+      }
+
+      adminMonthlyList.innerHTML = items.map((item) => `
+        <div class="admin-item">
+          <div class="admin-item-top">
+            <span>${item.monthName}</span>
+            <span>${money(item.totalEur)}</span>
+          </div>
+        </div>
+      `).join("");
+    }
+
+    function renderSalesList(rows = []) {
+      if (!rows.length) {
+        adminSalesList.innerHTML = `
+          <div class="admin-item">
+            <div class="admin-item-sub">Aucune vente enregistrée.</div>
+          </div>
+        `;
+        return;
+      }
+
+      adminSalesList.innerHTML = rows.slice(0, 5).map((row) => `
+        <div class="admin-item">
+          <div class="admin-item-top">
+            <span>${row.pack_name || "Pack"}</span>
+            <span>${money(row.amount_eur)}</span>
+          </div>
+          <div class="admin-item-sub">
+            ${row.sale_date || "-"} · ${row.customer_name || "Client inconnu"} · ${row.generations_added || 0} générations
+          </div>
+        </div>
+      `).join("");
+    }
+
+    function renderExpensesList(rows = []) {
+      if (!rows.length) {
+        adminExpensesList.innerHTML = `
+          <div class="admin-item">
+            <div class="admin-item-sub">Aucune dépense enregistrée.</div>
+          </div>
+        `;
+        return;
+      }
+
+      adminExpensesList.innerHTML = rows.slice(0, 5).map((row) => `
+        <div class="admin-item">
+          <div class="admin-item-top">
+            <span>${row.category || "Dépense"}</span>
+            <span>${money(row.amount_eur)}</span>
+          </div>
+          <div class="admin-item-sub">
+            ${row.expense_date || "-"} · ${row.vendor_name || "Fournisseur non précisé"}
+          </div>
+        </div>
+      `).join("");
+    }
+
+    function renderUsersList(rows = []) {
+      if (!rows.length) {
+        adminUsersList.innerHTML = `
+          <div class="admin-item">
+            <div class="admin-item-sub">Aucun client pour le moment.</div>
+          </div>
+        `;
+        return;
+      }
+
+      adminUsersList.innerHTML = rows.map((row) => `
+        <div class="admin-item">
+          <div class="admin-item-top">
+            <span>${row.email}</span>
+            <span>${row.current_generations} générations</span>
+          </div>
+          <div class="admin-item-sub">
+            Créé le ${row.created_at ? new Date(row.created_at).toLocaleDateString("fr-FR") : "-"}
+          </div>
+        </div>
+      `).join("");
+    }
+
+    function applyAdminDashboard(data) {
+      adminQuarterLabel.textContent = data.summary?.periodLabel || "-";
+      adminDeclarationTotal.textContent = money(data.summary?.declarationTotalEur || 0);
+      adminExpensesTotal.textContent = money(data.summary?.expensesTotalEur || 0);
+      adminNetTotal.textContent = money(data.summary?.internalNetEur || 0);
+      adminReportText.textContent = data.reportText || "Aucun rapport généré pour le moment.";
+      lastAdminReport = data.reportText || "Aucun rapport généré pour le moment.";
+      renderMonthlySales(data.summary?.monthlySales || []);
+      renderSalesList(data.sales || []);
+      renderExpensesList(data.expenses || []);
+    }
+
+    async function loadAdminUsers() {
+      const data = await adminFetch("/api/admin/users");
+      renderUsersList(data.users || []);
+    }
+
+    async function loadAdminDashboard(customQuarter, customYear) {
+      const current = currentQuarterYear();
+      const quarter = customQuarter || Number(reportQuarterInput.value) || current.quarter;
+      const year = customYear || Number(reportYearInput.value) || current.year;
+
+      reportQuarterInput.value = String(quarter);
+      reportYearInput.value = String(year);
+
+      const data = await adminFetch(`/api/admin/dashboard?quarter=${quarter}&year=${year}`);
+      applyAdminDashboard(data);
+    }
+
+    async function loadAdminWorkspace(quarter, year) {
+      await Promise.all([
+        loadAdminDashboard(quarter, year),
+        loadAdminUsers()
+      ]);
+      setAdminActionFeedback("Espace admin actualisé.");
+    }
+
+    async function handleAdminLogin() {
+      try {
+        const email = adminEmailInput.value.trim();
+        const password = adminPasswordInput.value;
+
+        if (!email || !password) {
+          setAdminFeedback("Email et mot de passe obligatoires.", true);
+          return;
+        }
+
+        setAdminFeedback("Connexion en cours...");
+
+        const response = await fetch(`${BACKEND_URL}/api/admin/login`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ email, password })
+        });
+
+        const rawText = await response.text();
+        const data = JSON.parse(rawText);
+
+        if (!response.ok || !data.ok) {
+          throw new Error(data.error || `Erreur HTTP ${response.status}`);
+        }
+
+        adminToken = data.token;
+        adminEmail = data.email;
+        localStorage.setItem(ADMIN_TOKEN_KEY, adminToken);
+        localStorage.setItem(ADMIN_EMAIL_KEY, adminEmail);
+        adminPasswordInput.value = "";
+        setAdminLoggedInState(true);
+        setAdminFeedback(`Connecté : ${adminEmail}`);
+        await loadAdminWorkspace();
+      } catch (error) {
+        clearAdminAuth(`Erreur : ${error.message || "connexion impossible"}`);
+      }
+    }
+
+    async function saveSale() {
+      try {
+        const payload = {
+          saleDate: saleDateInput.value || todayDateString(),
+          customerName: saleCustomerInput.value.trim(),
+          packName: salePackInput.value,
+          amountEur: saleAmountInput.value,
+          generationsAdded: saleGenerationsInput.value,
+          paymentMethod: salePaymentInput.value.trim(),
+          note: saleNoteInput.value.trim()
+        };
+
+        await adminFetch("/api/admin/sales", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(payload)
+        });
+
+        saleCustomerInput.value = "";
+        saleAmountInput.value = "";
+        saleGenerationsInput.value = "";
+        saleNoteInput.value = "";
+        await loadAdminWorkspace();
+        setAdminActionFeedback("Vente enregistrée. Rapport mis à jour automatiquement.");
+      } catch (error) {
+        setAdminActionFeedback(`Erreur vente : ${error.message || "impossible"}`, true);
+      }
+    }
+
+    async function saveExpense() {
+      try {
+        const payload = {
+          expenseDate: expenseDateInput.value || todayDateString(),
+          category: expenseCategoryInput.value.trim(),
+          amountEur: expenseAmountInput.value,
+          vendorName: expenseVendorInput.value.trim(),
+          note: expenseNoteInput.value.trim()
+        };
+
+        await adminFetch("/api/admin/expenses", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(payload)
+        });
+
+        expenseAmountInput.value = "";
+        expenseVendorInput.value = "";
+        expenseNoteInput.value = "";
+        await loadAdminWorkspace();
+        setAdminActionFeedback("Dépense enregistrée. Rapport mis à jour automatiquement.");
+      } catch (error) {
+        setAdminActionFeedback(`Erreur dépense : ${error.message || "impossible"}`, true);
+      }
+    }
+
+    async function grantGenerations() {
+      try {
+        const payload = {
+          email: grantEmailInput.value.trim(),
+          generations: grantAmountInput.value,
+          note: grantNoteInput.value.trim()
+        };
+
+        await adminFetch("/api/admin/users/add-generations", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(payload)
+        });
+
+        const grantedEmail = grantEmailInput.value.trim().toLowerCase();
+        grantEmailInput.value = "";
+        grantAmountInput.value = "";
+        grantNoteInput.value = "";
+
+        await loadAdminUsers();
+
+        if (clientEmail && clientEmail.toLowerCase() === grantedEmail) {
+          await loadClientMe();
+        }
+
+        setAdminActionFeedback("Générations ajoutées au client.");
+      } catch (error) {
+        setAdminActionFeedback(`Erreur ajout générations : ${error.message || "impossible"}`, true);
+      }
+    }
+
+    async function viewOtherQuarter() {
+      try {
+        await loadAdminDashboard(
+          Number(reportQuarterInput.value),
+          Number(reportYearInput.value)
+        );
+        setAdminActionFeedback("Rapport du trimestre affiché.");
+      } catch (error) {
+        setAdminActionFeedback(`Erreur rapport : ${error.message || "impossible"}`, true);
+      }
+    }
+
+    function openRevolutLink(link, label) {
+      if (!link) {
+        setStatus("Lien Revolut manquant pour ce pack.", "error");
+        return;
+      }
+
+      setStatus(`Ouverture du paiement pour ${label}. Recharge ensuite ton compte avec le même email.`, "success");
+      window.open(link, "_blank", "noopener,noreferrer");
+    }
+
+    themeBtn.addEventListener("click", toggleTheme);
+
+    clientToggleBtn.addEventListener("click", () => {
+      if (clientSection.classList.contains("hidden")) openClientSection();
+      else closeClientSection();
+    });
+
+    adminToggleBtn.addEventListener("click", () => {
+      if (adminSection.classList.contains("hidden")) openAdminSection();
+      else closeAdminSection();
+    });
+
+    modeFullBtn.addEventListener("click", () => switchMode("full"));
+    modeStemsBtn.addEventListener("click", () => switchMode("stems"));
+
+    bindAudioInput(fullAudioFile, fullAudioName, fullAudioPreview, fullAudioChip, "full");
+    bindAudioInput(voiceFile, voiceFileName, voicePreview, voiceChip, "voice");
+    bindAudioInput(instruFile, instruFileName, instruPreview, instruChip, "instru");
+
+    copySummaryBtn.addEventListener("click", () => {
+      copyText(lastSummaryText, "Résumé copié.");
+    });
+
+    copyDetailBtn.addEventListener("click", () => {
+      copyText(lastDetailText, "Détail complet copié.");
+    });
+
+    copyReportBtn.addEventListener("click", () => {
+      copyText(lastAdminReport, "Rapport copié.", adminActionFeedback);
+    });
+
+    downloadResultBtn.addEventListener("click", () => {
+      if (!lastResultBlobUrl) return;
+      const link = document.createElement("a");
+      link.href = lastResultBlobUrl;
+      link.download = lastResultFileName || "stems_master_final.wav";
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    });
+
+    clearResultBtn.addEventListener("click", () => {
+      clearResultState();
+      setStatus("Résultat final réinitialisé.", "warning");
+    });
+
+    buyPackButtons.forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const label = btn.dataset.packLabel || "ce pack";
+        const link = btn.dataset.packLink || "";
+
+        openRevolutLink(link, label);
+      });
+    });
+
+    toggleDetailBtn.addEventListener("click", () => {
+      const isHidden = detailContent.classList.contains("hidden");
+      detailContent.classList.toggle("hidden");
+      toggleDetailLabel.textContent = isHidden ? "Masquer le détail complet" : "Afficher le détail complet";
+      toggleDetailIcon.textContent = isHidden ? "−" : "+";
+    });
+
+    tabButtons.forEach((btn) => {
+      btn.addEventListener("click", () => showTab(btn.dataset.tab));
+    });
+
+    clientRegisterBtn.addEventListener("click", registerClient);
+    clientLoginBtn.addEventListener("click", loginClient);
+    clientLogoutBtn.addEventListener("click", () => clearClientAuth());
+    clientRefreshBtn.addEventListener("click", async () => {
+      try {
+        await loadClientMe();
+      } catch (error) {
+        clearClientAuth(`Erreur : ${error.message || "session expirée"}`);
+      }
+    });
+
+    adminLoginBtn.addEventListener("click", handleAdminLogin);
+    adminLogoutBtn.addEventListener("click", () => clearAdminAuth());
+    adminRefreshBtn.addEventListener("click", async () => {
+      try {
+        await loadAdminWorkspace();
+      } catch (error) {
+        setAdminActionFeedback(`Erreur actualisation : ${error.message || "impossible"}`, true);
+      }
+    });
+
+    saveSaleBtn.addEventListener("click", saveSale);
+    saveExpenseBtn.addEventListener("click", saveExpense);
+    grantGenerationsBtn.addEventListener("click", grantGenerations);
+    viewOtherQuarterBtn.addEventListener("click", viewOtherQuarter);
+
+    analyzeBtn.addEventListener("click", async () => {
+      try {
+        resetProgress();
+        setProgress(10, "Préparation...");
+        copyFeedback.textContent = "";
+
+        lastStemPlan = null;
+        lastSummaryText = "Résumé non disponible.";
+        lastDetailText = "Détail non disponible.";
+        clearResultState();
+
+        if (currentMode === "full") {
+          const file = fullAudioFile.files[0];
+          if (!file) {
+            setStatus("Ajoute un fichier complet.", "error");
+            return;
+          }
+
+          setStatus("Analyse du fichier complet en cours...", "");
+          const formData = new FormData();
+          formData.append("audio", file);
+
+          const response = await fetch(`${BACKEND_URL}/api/analyze`, {
+            method: "POST",
+            body: formData
+          });
+
+          const rawText = await response.text();
+          let data;
+
+          try {
+            data = JSON.parse(rawText);
+          } catch {
+            throw new Error("Réponse backend non JSON : " + rawText);
+          }
+
+          if (!response.ok || !data.ok) {
+            throw new Error(data.error || `Erreur HTTP ${response.status}`);
+          }
+
+          lastFullAnalysis = data.analysis;
+          updateSummaryFromFullAnalysis(lastFullAnalysis);
+
+          const summaryText = [
+            "Résumé IA",
+            "",
+            `Le morceau complet dure ${lastFullAnalysis.totalDurationSec} sec.`,
+            `Niveau intégré : ${lastFullAnalysis.integratedLufs} LUFS.`,
+            `Dynamique : ${lastFullAnalysis.dynamics}.`,
+            `Grave : ${lastFullAnalysis.lowEnd}.`,
+            `Brillance : ${lastFullAnalysis.brightness}.`,
+            `Stéréo : ${lastFullAnalysis.stereoWidth}.`
+          ].join("\n");
+
+          lastSummaryText = summaryText;
+          lastDetailText = "Analyse fichier complet :\n\n" + JSON.stringify(lastFullAnalysis, null, 2);
+
+          summaryAiBox.textContent = summaryText;
+          updateDetailTabs(
+            "Mode fichier complet : pas d’analyse voix séparée.",
+            "Mode fichier complet : pas d’analyse instrumental séparée.",
+            "Mode fichier complet : pas de plan stems séparé.",
+            summaryText
+          );
+
+          setProgress(100, "Analyse terminée");
+          setStatus("Analyse du fichier complet terminée.", "success");
+          return;
+        }
+
+        const voice = voiceFile.files[0];
+        const instrumental = instruFile.files[0];
+
+        if (!voice || !instrumental) {
+          setStatus("Ajoute la voix et l’instrumental.", "error");
+          return;
+        }
+
+        setStatus("Analyse voix + instrumental en cours...", "");
+        setProgress(25, "Envoi des 2 pistes...");
+
+        const analyzeForm = new FormData();
+        analyzeForm.append("voice", voice);
+        analyzeForm.append("instrumental", instrumental);
+
+        const analyzeResponse = await fetch(`${BACKEND_URL}/api/analyze-stems`, {
+          method: "POST",
+          body: analyzeForm
+        });
+
+        const analyzeRawText = await analyzeResponse.text();
+        let analyzeData;
+
+        try {
+          analyzeData = JSON.parse(analyzeRawText);
+        } catch {
+          throw new Error("Réponse backend non JSON : " + analyzeRawText);
+        }
+
+        if (!analyzeResponse.ok || !analyzeData.ok) {
+          throw new Error(analyzeData.error || `Erreur HTTP ${analyzeResponse.status}`);
+        }
+
+        lastVoiceAnalysis = analyzeData.voice.analysis;
+        lastInstruAnalysis = analyzeData.instrumental.analysis;
+
+        updateSummaryFromStemAnalyses(lastVoiceAnalysis, lastInstruAnalysis);
+
+        setProgress(60, "Construction du plan IA séparé...");
+
+        const planResponse = await fetch(`${BACKEND_URL}/api/plan-stems`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            userPrompt: promptInput.value,
+            voiceAnalysis: lastVoiceAnalysis,
+            instrumentalAnalysis: lastInstruAnalysis
+          })
+        });
+
+        const planRawText = await planResponse.text();
+        let planData;
+
+        try {
+          planData = JSON.parse(planRawText);
+        } catch {
+          throw new Error("Réponse plan non JSON : " + planRawText);
+        }
+
+        if (!planResponse.ok || !planData.ok) {
+          throw new Error(planData.error || `Erreur HTTP ${planResponse.status}`);
+        }
+
+        lastStemPlan = planData.plan;
+
+        const summaryText = buildStemHumanSummary(
+          lastVoiceAnalysis,
+          lastInstruAnalysis,
+          lastStemPlan
+        );
+
+        lastSummaryText = summaryText;
+        lastDetailText =
+          "Analyse voix :\n\n" +
+          JSON.stringify(lastVoiceAnalysis, null, 2) +
+          "\n\nAnalyse instrumental :\n\n" +
+          JSON.stringify(lastInstruAnalysis, null, 2) +
+          "\n\nPlan IA séparé :\n\n" +
+          JSON.stringify(lastStemPlan, null, 2);
+
+        summaryAiBox.textContent = summaryText;
+
+        updateDetailTabs(
+          JSON.stringify(lastVoiceAnalysis, null, 2),
+          JSON.stringify(lastInstruAnalysis, null, 2),
+          JSON.stringify(lastStemPlan, null, 2),
+          summaryText
+        );
+
+        setProgress(100, "Analyse + plan séparé terminés");
+        setStatus("Analyse voix + instrumental terminée avec plan IA séparé.", "success");
+      } catch (error) {
+        resetProgress();
+        setStatus("Erreur : " + (error?.message || "analyse impossible"), "error");
+      }
+    });
+
+    masterBtn.addEventListener("click", async () => {
+      try {
+        copyFeedback.textContent = "";
+
+        if (currentMode === "full") {
+          setStatus("Le vrai traitement est surtout optimisé en mode voix + instrumental.", "warning");
+          return;
+        }
+
+        const voice = voiceFile.files[0];
+        const instrumental = instruFile.files[0];
+
+        if (!voice || !instrumental) {
+          setStatus("Ajoute la voix et l’instrumental.", "error");
+          return;
+        }
+
+        if (!lastStemPlan) {
+          setStatus("Commence par cliquer sur Analyser pour générer le plan IA.", "error");
+          return;
+        }
+
+        if (!clientToken && !adminToken) {
+          setStatus("Connecte-toi en client ou en admin pour générer le rendu.", "error");
+          return;
+        }
+
+        resetProgress();
+        setProgress(15, "Préparation du traitement...");
+        clearResultState();
+
+        const formData = new FormData();
+        formData.append("voice", voice);
+        formData.append("instrumental", instrumental);
+        formData.append("stemPlan", JSON.stringify(lastStemPlan));
+
+        const headers = {};
+        if (clientToken) {
+          headers.Authorization = `Bearer ${clientToken}`;
+        } else if (adminToken) {
+          headers["X-Admin-Authorization"] = `Bearer ${adminToken}`;
+        }
+
+        setStatus("Traitement voix + instrumental en cours...", "");
+        setProgress(45, "Embellissement et traitement séparé...");
+
+        const response = await fetch(`${BACKEND_URL}/api/master-stems`, {
+          method: "POST",
+          headers,
+          body: formData
+        });
+
+        if (!response.ok) {
+          const rawText = await response.text();
+          let errorMessage = `Erreur HTTP ${response.status}`;
+
+          try {
+            const parsed = JSON.parse(rawText);
+            errorMessage = parsed.error || errorMessage;
+          } catch {
+            if (rawText) errorMessage = rawText;
+          }
+
+          throw new Error(errorMessage);
+        }
+
+        const blob = await response.blob();
+        const downloadUrl = URL.createObjectURL(blob);
+
+        const disposition = response.headers.get("Content-Disposition") || "";
+        const fileNameMatch = disposition.match(/filename="([^"]+)"/i);
+        const fileName = fileNameMatch?.[1] || "stems_master_final.wav";
+        const remainingGenerations = response.headers.get("X-Remaining-Generations");
+        const adminMode = response.headers.get("X-Admin-Mode") === "1";
+
+        const link = document.createElement("a");
+        link.href = downloadUrl;
+        link.download = fileName;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+
+        if (remainingGenerations !== null && currentClientProfile) {
+          currentClientProfile.currentGenerations = Number(remainingGenerations);
+          clientGenerationsValue.textContent = String(remainingGenerations);
+        }
+
+        setProgress(100, "Rendu final terminé");
+
+        const generationLine = adminMode
+          ? "Mode admin : aucune génération débitée."
+          : `Il te reste ${remainingGenerations ?? currentClientProfile?.currentGenerations ?? "-"} génération(s).`;
+
+        const finalSummary = [
+          "Produit final généré",
+          "",
+          "L’embellissement et le final master ont été appliqués avec le plan IA actuel.",
+          "",
+          "Voix :",
+          `- Présence : ${lastStemPlan.voicePlan.settings.presence_gain_db} dB`,
+          `- Air : ${lastStemPlan.voicePlan.settings.air_gain_db} dB`,
+          `- Compression ratio : ${lastStemPlan.voicePlan.settings.compression_ratio}`,
+          "",
+          "Instrumental :",
+          `- Grave : ${lastStemPlan.instrumentalPlan.settings.low_gain_db} dB`,
+          `- Présence : ${lastStemPlan.instrumentalPlan.settings.presence_gain_db} dB`,
+          `- Glue ratio : ${lastStemPlan.instrumentalPlan.settings.glue_ratio}`,
+          "",
+          "Recombinaison :",
+          `- Niveau voix : ${lastStemPlan.recombinationPlan.voiceLevelDb} dB`,
+          `- Niveau instrumental : ${lastStemPlan.recombinationPlan.instrumentalLevelDb} dB`,
+          "",
+          generationLine,
+          "",
+          "Ton fichier final a été téléchargé."
+        ].join("\n");
+
+        summaryAiBox.textContent = finalSummary;
+        lastSummaryText = finalSummary;
+        lastDetailText =
+          "Plan IA utilisé :\n\n" +
+          JSON.stringify(lastStemPlan, null, 2) +
+          "\n\nRésultat : fichier final généré et téléchargé.";
+
+        tabSummaryContent.textContent = finalSummary;
+        tabPlanContent.textContent = JSON.stringify(lastStemPlan, null, 2);
+
+        setResultState({
+          ready: true,
+          text: finalSummary,
+          fileName,
+          blobUrl: downloadUrl
+        });
+
+        if (!adminMode && clientToken) {
+          await loadClientMe();
+        }
+
+        setStatus("Traitement terminé. Le rendu final a été généré et téléchargé.", "success");
+      } catch (error) {
+        resetProgress();
+        clearResultState();
+        setStatus("Erreur : " + (error?.message || "traitement impossible"), "error");
+      }
+    });
+
+    const savedTheme = localStorage.getItem("mastering-theme");
+    if (savedTheme === "light") {
+      body.classList.add("light");
+      themeBtn.textContent = "Mode sombre";
+    }
+
+    const currentQuarter = currentQuarterYear();
+    saleDateInput.value = todayDateString();
+    expenseDateInput.value = todayDateString();
+    reportQuarterInput.value = String(currentQuarter.quarter);
+    reportYearInput.value = String(currentQuarter.year);
+
+    if (clientToken) {
+      setClientLoggedInState(true);
+      loadClientMe().catch((error) => clearClientAuth(`Erreur : ${error.message || "session expirée"}`));
+    } else {
+      setClientLoggedInState(false);
+    }
+
+    if (adminToken) {
+      setAdminLoggedInState(true);
+      loadAdminWorkspace().catch((error) => clearAdminAuth(`Erreur : ${error.message || "session expirée"}`));
+    } else {
+      setAdminLoggedInState(false);
+    }
+
+    updateSummaryDefault();
+    clearResultState();
+  </script>
+</body>
+</html>
