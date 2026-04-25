@@ -1,3 +1,5 @@
+import { createTrackedOpenAIResponse } from "./openai-usage-v2.js";
+
 function cleanText(value, fallback = "") {
   return typeof value === "string" ? value.trim() : fallback;
 }
@@ -271,6 +273,7 @@ function normalizeAssistantResult(raw, fallback) {
 
 export async function buildInternalAssistantReplyV2({
   openai,
+  supabase,
   payload,
   normalizeText,
   normalizeEmail
@@ -333,18 +336,26 @@ Contexte métier à respecter :
 - rester concret, utile et court
 `.trim();
 
-  const userPrompt = JSON.stringify(safePayload, null, 2);
+  const input = [
+    { role: "system", content: systemPrompt },
+    { role: "user", content: JSON.stringify(safePayload, null, 2) }
+  ];
 
   try {
-    const response = await openai.responses.create({
-      model: "gpt-5-mini",
-      input: [
-        { role: "system", content: systemPrompt },
-        { role: "user", content: userPrompt }
-      ]
+    const { outputText } = await createTrackedOpenAIResponse({
+      openai,
+      supabase,
+      feature: "assistant_admin_v2",
+      model: process.env.OPENAI_ASSISTANT_MODEL || "gpt-5-mini",
+      input,
+      metadata: {
+        appArea: safePayload.appArea || "",
+        requestType: fallback.requestType,
+        hasClientEmail: Boolean(safePayload.clientEmail)
+      }
     });
 
-    const parsed = extractJsonLoose(response.output_text || "");
+    const parsed = extractJsonLoose(outputText || "");
     return normalizeAssistantResult(parsed, fallback);
   } catch {
     return fallback;
